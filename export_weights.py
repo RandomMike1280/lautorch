@@ -1,3 +1,4 @@
+import base64
 import torch
 
 OUTPUT_FILES = (
@@ -9,8 +10,8 @@ SPLIT_TENSORS = {"W_fc": 3}
 
 def quantize_and_encode(tensor, name):
     """
-    Quantizes a PyTorch tensor to 8-bit integers and encodes it as a hex string.
-    Returns a dictionary of metadata and the hex string.
+    Quantizes a PyTorch tensor to 8-bit integers and encodes it as base64.
+    Returns a dictionary of metadata and the encoded string.
     """
     flat_tensor = tensor.flatten()
     min_val = flat_tensor.min().item()
@@ -21,7 +22,8 @@ def quantize_and_encode(tensor, name):
     
     # 8-bit scale to 0..255
     quantized = ((flat_tensor - min_val) / range_val * 255.0).round().clamp(0, 255).int()
-    hex_str = "".join(f"{val:02x}" for val in quantized.tolist())
+    byte_data = bytes(quantized.tolist())
+    b64_str = base64.b64encode(byte_data).decode("ascii")
     
     # Get rows and cols for matrix consumers. Full dims are kept for conv kernels.
     shape = tensor.shape
@@ -32,7 +34,7 @@ def quantize_and_encode(tensor, name):
         "name": name,
         "min": min_val,
         "max": max_val,
-        "hex": hex_str,
+        "b64": b64_str,
         "rows": rows,
         "cols": cols,
         "dims": list(shape)
@@ -53,13 +55,13 @@ def get_decoder_state(checkpoint):
         }
     raise KeyError("Checkpoint must contain 'decoder_state_dict' or 'vae_state_dict'.")
 
-def split_hex(hex_str, parts):
-    part_size = (len(hex_str) + parts - 1) // parts
-    if part_size % 2 == 1:
-        part_size += 1
-    return [hex_str[i:i + part_size] for i in range(0, len(hex_str), part_size)]
+def split_b64(b64_str, parts):
+    part_size = (len(b64_str) + parts - 1) // parts
+    if part_size % 4:
+        part_size += 4 - (part_size % 4)
+    return [b64_str[i:i + part_size] for i in range(0, len(b64_str), part_size)]
 
-def write_weight_entry(f, name, meta, hex_override=None, part_names=None):
+def write_weight_entry(f, name, meta, b64_override=None, part_names=None):
     f.write(f"modelWeights[\"{name}\"] = {{\n")
     f.write(f"    [\"min\"] = {meta['min']:.8f},\n")
     f.write(f"    [\"max\"] = {meta['max']:.8f},\n")
@@ -70,13 +72,13 @@ def write_weight_entry(f, name, meta, hex_override=None, part_names=None):
         f.write(",\n")
         f.write("    [\"parts\"] = {" + ", ".join(f"\"{part}\"" for part in part_names) + "}\n")
     else:
-        hex_str = meta['hex'] if hex_override is None else hex_override
+        b64_str = meta['b64'] if b64_override is None else b64_override
         f.write(",\n")
-        f.write(f"    [\"hex\"] = \"{hex_str}\"\n")
+        f.write(f"    [\"b64\"] = \"{b64_str}\"\n")
     f.write("}\n\n")
 
-def write_hex_part(f, name, hex_str):
-    f.write(f"modelWeights[\"{name}\"] = \"{hex_str}\"\n\n")
+def write_b64_part(f, name, b64_str):
+    f.write(f"modelWeights[\"{name}\"] = \"{b64_str}\"\n\n")
 
 def write_weight_file(output_filename, tensors, split_entries, split_parts):
     print(f"Quantizing and writing Lau weight tables to '{output_filename}'...")
@@ -95,7 +97,7 @@ def write_weight_file(output_filename, tensors, split_entries, split_parts):
             part_name = part_names[part_index]
             if part_index == 0:
                 write_weight_entry(f, name, meta, part_names=part_names)
-            write_hex_part(f, part_name, split_parts[name]["hex_parts"][part_index])
+            write_b64_part(f, part_name, split_parts[name]["b64_parts"][part_index])
 
         f.write("return modelWeights\n")
 
@@ -115,7 +117,7 @@ def main():
     
     # Transpose weights to match Lau matrix multiplication convention (x * W_transposed)
     # so we do not need to transpose at runtime in Lau.
-    # z (1 x 8) * W_fc (8 x 392) -> (1 x 392)
+    # z (1 x latent_dim) * W_fc (latent_dim x 392) -> (1 x 392)
     dec_fc_weight_t = dec_fc_weight.t()
     
     tensors = [
@@ -135,7 +137,7 @@ def main():
         split_parts[name] = {
             "meta": meta,
             "part_names": [f"{name}_part{i}" for i in range(1, part_count + 1)],
-            "hex_parts": split_hex(meta["hex"], part_count),
+            "b64_parts": split_b64(meta["b64"], part_count),
         }
 
     for output_filename, tensor_names, split_entries in OUTPUT_FILES:

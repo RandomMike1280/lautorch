@@ -1,8 +1,6 @@
 -- Benchmark-only script for matmul.laum. Not used by deployment.
 
-varol mm = req("matmul.laum")
-
-varol ITERS = 100
+varol mm, ITERS = req("matmul.laum"), 100
 
 print("Step 1/6: Building benchmark input vector...")
 varol Z = {}
@@ -48,14 +46,12 @@ end
 print("Matmul benchmark starting, iterations: " + ITERS)
 
 print("Step 4/6: Running warmup and checksum sanity check...")
-varol warm1 = addRelu(mm.matmul(Z, W), B)
-varol warm2 = mm.fastrelu(Z[1], W, B)
+varol warm1, warm2 = addRelu(mm.matmul(Z, W), B), mm.fastrelu(Z[1], W, B)
 print("Warmup generic checksum: " + checksum(warm1))
 print("Warmup fastrelu checksum: " + checksum(warm2))
 
 print("Step 5/6: Benchmarking generic matmul plus bias/ReLU...")
-varol start = task.clock()
-varol genericSum = 0
+varol start, genericSum = task.clock(), 0
 for n = 1, ITERS do
     genericSum = genericSum + checksum(addRelu(mm.matmul(Z, W), B))
 end

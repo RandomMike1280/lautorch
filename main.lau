@@ -1,9 +1,6 @@
-varol mm=req("matmul.laum")
-varol d1=req("weights_data_1.laum")
-varol d2=req("weights_data_2.laum")
-varol d3=req("weights_data_3.laum")
-varol NOISE=0.25
-varol H={["0"]=0,["1"]=1,["2"]=2,["3"]=3,["4"]=4,["5"]=5,["6"]=6,["7"]=7,["8"]=8,["9"]=9,["a"]=10,["b"]=11,["c"]=12,["d"]=13,["e"]=14,["f"]=15}
+varol mm,d1,d2,d3=req("matmul.laum"),req("weights_data_1.laum"),req("weights_data_2.laum"),req("weights_data_3.laum")
+varol NOISE=0.1
+varol A={["A"]=0,["B"]=1,["C"]=2,["D"]=3,["E"]=4,["F"]=5,["G"]=6,["H"]=7,["I"]=8,["J"]=9,["K"]=10,["L"]=11,["M"]=12,["N"]=13,["O"]=14,["P"]=15,["Q"]=16,["R"]=17,["S"]=18,["T"]=19,["U"]=20,["V"]=21,["W"]=22,["X"]=23,["Y"]=24,["Z"]=25,["a"]=26,["b"]=27,["c"]=28,["d"]=29,["e"]=30,["f"]=31,["g"]=32,["h"]=33,["i"]=34,["j"]=35,["k"]=36,["l"]=37,["m"]=38,["n"]=39,["o"]=40,["p"]=41,["q"]=42,["r"]=43,["s"]=44,["t"]=45,["u"]=46,["v"]=47,["w"]=48,["x"]=49,["y"]=50,["z"]=51,["0"]=52,["1"]=53,["2"]=54,["3"]=55,["4"]=56,["5"]=57,["6"]=58,["7"]=59,["8"]=60,["9"]=61,["+"]=62,["/"]=63,["="]=0}
 
 func ent(n)
  if d1[n] then return d1[n] end
@@ -11,32 +8,61 @@ func ent(n)
  return d3[n]
 end
 
-func one(s,i,e,r)
- varol b=H[string.sub(s,i,i)]*16+H[string.sub(s,i+1,i+1)]
+func val(e,r,b)
  return e["min"]+(b/255.0)*r
 end
 
-func vals(e)
- varol r=e["max"]-e["min"]
- varol v={}
- if e["hex"] then
-  varol s=e["hex"]
-  varol k=1
-  varol i=1
-  while i<=#s do
-   v[k]=one(s,i,e,r)
+func decv(s,v,k,e,r)
+ varol i=1
+ while i<=#s do
+  varol c3,c4=string.sub(s,i+2,i+2),string.sub(s,i+3,i+3)
+  varol n=((A[string.sub(s,i,i)]*64+A[string.sub(s,i+1,i+1)])*64+A[c3])*64+A[c4]
+  v[k]=val(e,r,math.floor(n/65536))
+  k=k+1
+  if c3~="=" then
+   v[k]=val(e,r,math.floor(n/256)%256)
    k=k+1
-   i=i+2
   end
+  if c4~="=" then
+   v[k]=val(e,r,n%256)
+   k=k+1
+  end
+  i=i+4
+ end
+ return k
+end
+
+func decm(s,m,k,e,r)
+ varol i=1
+ while i<=#s do
+  varol c3,c4=string.sub(s,i+2,i+2),string.sub(s,i+3,i+3)
+  varol n=((A[string.sub(s,i,i)]*64+A[string.sub(s,i+1,i+1)])*64+A[c3])*64+A[c4]
+  varol row=math.floor((k-1)/e["cols"])+1
+  m[row][k-(row-1)*e["cols"]]=val(e,r,math.floor(n/65536))
+  k=k+1
+  if c3~="=" then
+   row=math.floor((k-1)/e["cols"])+1
+   m[row][k-(row-1)*e["cols"]]=val(e,r,math.floor(n/256)%256)
+   k=k+1
+  end
+  if c4~="=" then
+   row=math.floor((k-1)/e["cols"])+1
+   m[row][k-(row-1)*e["cols"]]=val(e,r,n%256)
+   k=k+1
+  end
+  i=i+4
+ end
+ return k
+end
+
+func vals(e)
+ varol r,v,k=e["max"]-e["min"],{},1
+ if e["b64"] then
+  k=decv(e["b64"],v,k,e,r)
  else
   varol p=e["parts"]
   for j=1,#p do
-   varol s=ent(p[j])
-   varol i=1
-   while i<=#s do
-    v[#v+1]=one(s,i,e,r)
-    i=i+2
-   end
+   k=decv(ent(p[j]),v,k,e,r)
   end
  end
  return v
@@ -44,50 +70,27 @@ end
 
 func mat(n)
  varol e=ent(n)
- varol rg=e["max"]-e["min"]
- varol m={}
- varol k=1
+ varol rg,m,k=e["max"]-e["min"],{},1
  for r=1,e["rows"] do
   m[r]={}
  end
- if e["hex"] then
-  varol s=e["hex"]
-  varol i=1
-  while i<=#s do
-   varol row=math.floor((k-1)/e["cols"])+1
-   m[row][k-(row-1)*e["cols"]]=one(s,i,e,rg)
-   k=k+1
-   i=i+2
-  end
+ if e["b64"] then
+  k=decm(e["b64"],m,k,e,rg)
  else
   varol p=e["parts"]
   for j=1,#p do
-   varol s=ent(p[j])
-   varol i=1
-   while i<=#s do
-    varol row=math.floor((k-1)/e["cols"])+1
-    m[row][k-(row-1)*e["cols"]]=one(s,i,e,rg)
-    k=k+1
-    i=i+2
-   end
+   k=decm(ent(p[j]),m,k,e,rg)
   end
  end
  return m
 end
 
 print("LauTorch: loading weights...")
-varol E=mat("embed")
-varol W=mat("W_fc")
-varol B=mat("b_fc")
-varol C1=vals(ent("conv1_w"))
-varol B1=mat("conv1_b")
-varol C2=vals(ent("conv2_w"))
-varol B2=mat("conv2_b")
+varol E,W,B,C1,B1,C2,B2=mat("embed"),mat("W_fc"),mat("b_fc"),vals(ent("conv1_w")),mat("conv1_b"),vals(ent("conv2_w")),mat("conv2_b")
 print("LauTorch: ready")
 
 func feat(v,ch,h,w)
- varol f={}
- varol k=1
+ varol f,k={},1
  for c=1,ch do
   f[c]={}
   for y=1,h do
@@ -126,17 +129,8 @@ func cv(f,w,b,ic,oc,h,wi)
     varol s=b[1][ocn]
     if y>1 AND y<h AND x>1 AND x<wi then
      for i=1,ic do
-      varol q=((ocn-1)*ic+(i-1))*9
-      varol r=f[i]
-      s=s+r[y-1][x-1]*w[q+1]
-      s=s+r[y-1][x]*w[q+2]
-      s=s+r[y-1][x+1]*w[q+3]
-      s=s+r[y][x-1]*w[q+4]
-      s=s+r[y][x]*w[q+5]
-      s=s+r[y][x+1]*w[q+6]
-      s=s+r[y+1][x-1]*w[q+7]
-      s=s+r[y+1][x]*w[q+8]
-      s=s+r[y+1][x+1]*w[q+9]
+      varol q,r=((ocn-1)*ic+(i-1))*9,f[i]
+      s=s+r[y-1][x-1]*w[q+1]+r[y-1][x]*w[q+2]+r[y-1][x+1]*w[q+3]+r[y][x-1]*w[q+4]+r[y][x]*w[q+5]+r[y][x+1]*w[q+6]+r[y+1][x-1]*w[q+7]+r[y+1][x]*w[q+8]+r[y+1][x+1]*w[q+9]
      end
     else
      for i=1,ic do
@@ -146,8 +140,7 @@ func cv(f,w,b,ic,oc,h,wi)
         for kx=1,3 do
          varol xx=x+kx-2
          if xx>=1 AND xx<=wi then
-          varol q=(((ocn-1)*ic+(i-1))*3+(ky-1))*3+kx
-          s=s+f[i][yy][xx]*w[q]
+          s=s+f[i][yy][xx]*w[(((ocn-1)*ic+(i-1))*3+(ky-1))*3+kx]
          end
         end
        end

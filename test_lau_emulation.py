@@ -1,14 +1,15 @@
 """
 Verification script: Emulates the Lau runtime logic in Python to confirm
-that the hex-encoded quantized convolutional weights produce the same
+that the base64-encoded quantized convolutional weights produce the same
 binarized outputs as the original PyTorch model.
 """
+import base64
 import torch
 from vae_model import TinyVAE, TokenEmbeddingModel
 
-def hex_to_bytes(hex_str):
-    """Decode hex string to list of 0-255 ints (mirrors Lau hexToBytes)."""
-    return [int(hex_str[i:i+2], 16) for i in range(0, len(hex_str), 2)]
+def b64_to_bytes(b64_str):
+    """Decode base64 string to list of 0-255 ints."""
+    return list(base64.b64decode(b64_str.encode("ascii")))
 
 def dequantize(byte_list, min_val, max_val):
     """Dequantize byte list back to floats (mirrors Lau dequantize)."""
@@ -131,9 +132,9 @@ def parse_weights_laum(filepath):
         content = f.read()
 
     weights = {}
-    string_pattern = r'modelWeights\["(\w+)"\]\s*=\s*"([0-9a-f]+)"'
+    string_pattern = r'modelWeights\["(\w+)"\]\s*=\s*"([^"]+)"'
     for match in re.finditer(string_pattern, content):
-        weights[match.group(1)] = {'hex': match.group(2)}
+        weights[match.group(1)] = {'b64': match.group(2)}
 
     pattern = r'modelWeights\["(\w+)"\]\s*=\s*\{(.*?)\n\}'
     for match in re.finditer(pattern, content, re.DOTALL):
@@ -145,14 +146,14 @@ def parse_weights_laum(filepath):
         rows = int(re.search(r'\["rows"\]\s*=\s*(\d+)', block).group(1))
         cols = int(re.search(r'\["cols"\]\s*=\s*(\d+)', block).group(1))
 
-        hex_parts = re.findall(r'"([0-9a-f]+)"', block)
-        hex_str = ''.join(hex_parts)
+        b64_match = re.search(r'\["b64"\]\s*=\s*"([^"]+)"', block)
         part_match = re.search(r'\["parts"\]\s*=\s*\{([^}]+)\}', block)
         part_names = re.findall(r'"([^"]+)"', part_match.group(1)) if part_match else []
 
         weights[name] = {
             'min': min_val, 'max': max_val,
-            'rows': rows, 'cols': cols, 'hex': hex_str,
+            'rows': rows, 'cols': cols,
+            'b64': b64_match.group(1) if b64_match else '',
             'parts': part_names
         }
     return weights
@@ -163,18 +164,18 @@ def parse_split_weights_laum(filepaths):
         weights.update(parse_weights_laum(filepath))
     for entry in weights.values():
         if entry.get('parts'):
-            entry['hex'] = ''.join(weights[part]['hex'] for part in entry['parts'])
+            entry['b64'] = ''.join(weights[part]['b64'] for part in entry['parts'])
     return weights
 
 def decode_weight(entry):
     """Decode a weight entry as a matrix (mirrors Lau decodeWeight)."""
-    byte_list = hex_to_bytes(entry['hex'])
+    byte_list = b64_to_bytes(entry['b64'])
     floats = dequantize(byte_list, entry['min'], entry['max'])
     return reshape(floats, entry['rows'], entry['cols'])
 
 def decode_flat_weight(entry):
     """Decode a weight entry as a flat list (mirrors Lau decodeFlatWeight)."""
-    byte_list = hex_to_bytes(entry['hex'])
+    byte_list = b64_to_bytes(entry['b64'])
     return dequantize(byte_list, entry['min'], entry['max'])
 
 def lau_forward(digit, embed, W_fc, b_fc, conv1_w, conv1_b, conv2_w, conv2_b):
