@@ -1,0 +1,6 @@
+__pycache__/
+*.py[cod]
+
+generated_digit_*.png
+
+*.pth

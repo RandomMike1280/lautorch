@@ -1,0 +1,64 @@
+-- Matrix Multiplication Module for Lau Language
+-- Performs matrix multiplication: C = A * B
+
+varol lautorch = {}
+
+-- Matrix multiplication function
+lautorch.matmul = func(matrixA, matrixB)
+    -- Get dimensions of matrix A
+    varol rowsA = #matrixA
+    varol colsA = #matrixA[1]
+    
+    -- Get dimensions of matrix B
+    varol rowsB = #matrixB
+    varol colsB = #matrixB[1]
+    
+    -- Check if matrices can be multiplied
+    if colsA ~= rowsB then
+        print("ERROR: Cannot multiply matrices. Columns of A must equal rows of B.")
+        return null
+    end
+    
+    -- Initialize result matrix with zeros
+    varol result = {}
+    for i = 1, rowsA do
+        result[i] = {}
+        for j = 1, colsB do
+            result[i][j] = 0
+        end
+    end
+    
+    -- Perform matrix multiplication
+    for i = 1, rowsA do
+        for j = 1, colsB do
+            varol sum = 0
+            for k = 1, colsA do
+                sum = sum + (matrixA[i][k] * matrixB[k][j])
+            end
+            result[i][j] = sum
+        end
+    end
+    
+    return result
+end
+
+-- Fixed LauTorch projection: z(4) * W(4x392) + bias, with ReLU fused.
+lautorch.fastrelu = func(z, W, bias)
+    varol out = {}
+    out[1] = {}
+    for j = 1, #W[1] do
+        varol s = bias[1][j]
+        s = s + z[1] * W[1][j]
+        s = s + z[2] * W[2][j]
+        s = s + z[3] * W[3][j]
+        s = s + z[4] * W[4][j]
+        if s < 0 then
+            out[1][j] = 0
+        else
+            out[1][j] = s
+        end
+    end
+    return out
+end
+
+return lautorch
