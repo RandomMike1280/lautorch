@@ -7,7 +7,7 @@ import torch.nn.functional as F
 DEFAULT_NOISE_SCALE = 0.25
 
 class TokenEmbeddingModel(nn.Module):
-    """ Maps integer tokens 1..9 into the latent space. """
+    """ Maps integer tokens 0..9 into the latent space. """
     def __init__(self, num_tokens=10, latent_dim=8):
         super(TokenEmbeddingModel, self).__init__()
         self.embedding = nn.Embedding(num_tokens, latent_dim)
@@ -50,17 +50,17 @@ def print_ascii_digit(image):
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python generate_minimal.py [token_id] (where token_id is between 1 and 9)")
+        print("Usage: python generate_minimal.py [token_id] (where token_id is between 0 and 9)")
         sys.exit(1)
         
     try:
         token_id = int(sys.argv[1])
     except ValueError:
-        print("Error: token_id must be an integer between 1 and 9.")
+        print("Error: token_id must be an integer between 0 and 9.")
         sys.exit(1)
         
-    if token_id < 1 or token_id > 9:
-        print("Error: token_id must be between 1 and 9.")
+    if token_id < 0 or token_id > 9:
+        print("Error: token_id must be between 0 and 9.")
         sys.exit(1)
 
     noise_scale = DEFAULT_NOISE_SCALE

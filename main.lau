@@ -180,7 +180,7 @@ end
 
 func fwd(t)
  varol z={}
- for i=1,#E[t] do z[i]=E[t][i]+(math.random(-100,100)/100.0)*NOISE end
+ for i=1,#E[t+1] do z[i]=E[t+1][i]+(math.random(-100,100)/100.0)*NOISE end
  varol h=mm.fastrelu(z,W,B)
  varol f=feat(h[1],8,7,7)
  f=up(f,8,7,7)
@@ -203,7 +203,7 @@ end
 
 player.chatted:connect(func(m)
  varol d=tonumber(m)
- if d AND d>=1 AND d<=9 then
+ if d~=null AND d>=0 AND d<=9 then
   print("LauTorch: digit "+m)
   show(fwd(d))
  end

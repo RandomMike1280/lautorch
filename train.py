@@ -72,9 +72,8 @@ def train(epochs=10, batch_size=128, lr=1e-3, latent_dim=4):
             recon_batch, mu, logvar = vae(data_flat)
             vae_loss, bce, kld = loss_function(recon_batch, data_flat, mu, logvar)
             
-            # 2. Token Embedding Loss for digits 1..9
-            # Filter tokens to strictly be between 1 and 9 (inclusive)
-            embed_mask = (targets >= 1) & (targets <= 9)
+            # 2. Token Embedding Loss for digits 0..9
+            embed_mask = (targets >= 0) & (targets <= 9)
             if embed_mask.any():
                 active_targets = targets[embed_mask]
                 active_data = data_flat[embed_mask]
@@ -115,7 +114,7 @@ def train(epochs=10, batch_size=128, lr=1e-3, latent_dim=4):
             
         # Average epoch metrics
         num_samples = len(train_loader.dataset)
-        num_embed_samples = sum((train_dataset.targets >= 1) & (train_dataset.targets <= 9)).item()
+        num_embed_samples = sum((train_dataset.targets >= 0) & (train_dataset.targets <= 9)).item()
         
         print(f"Epoch {epoch:02d} | "
               f"VAE BCE: {train_vae_bce/num_samples:.2f} | "

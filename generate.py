@@ -20,18 +20,18 @@ def print_ascii_digit(image):
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python generate.py [token_id] (where token_id is between 1 and 9)")
+        print("Usage: python generate.py [token_id] (where token_id is between 0 and 9)")
         print("Example: python generate.py 5")
         sys.exit(1)
         
     try:
         token_id = int(sys.argv[1])
     except ValueError:
-        print("Error: token_id must be an integer between 1 and 9.")
+        print("Error: token_id must be an integer between 0 and 9.")
         sys.exit(1)
         
-    if token_id < 1 or token_id > 9:
-        print("Error: token_id must be between 1 and 9.")
+    if token_id < 0 or token_id > 9:
+        print("Error: token_id must be between 0 and 9.")
         sys.exit(1)
 
     noise_scale = DEFAULT_NOISE_SCALE

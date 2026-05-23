@@ -219,7 +219,7 @@ def main():
     vae.eval()
     token_emb.eval()
 
-    for digit in range(1, 10):
+    for digit in range(0, 10):
         lau_binary = lau_forward(digit, embed, W_fc, b_fc, conv1_w, conv1_b, conv2_w, conv2_b)
 
         with torch.no_grad():
@@ -236,8 +236,8 @@ def main():
         print(f"Digit {digit}: {match_count}/{total} pixels match ({pct:.1f}%) [{status}]")
 
     print()
-    print("Rendering Lau-emulated outputs for digits 1-9:")
-    for digit in range(1, 10):
+    print("Rendering Lau-emulated outputs for digits 0-9:")
+    for digit in range(0, 10):
         result = lau_forward(digit, embed, W_fc, b_fc, conv1_w, conv1_b, conv2_w, conv2_b)
 
         print(f"\n--- Digit {digit} ---")

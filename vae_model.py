@@ -54,11 +54,11 @@ class TinyVAE(nn.Module):
 
 class TokenEmbeddingModel(nn.Module):
     """
-    A separate embedding model that maps integer tokens 1..9 into the latent space.
+    A separate embedding model that maps integer tokens 0..9 into the latent space.
     """
     def __init__(self, num_tokens=10, latent_dim=8):
         super(TokenEmbeddingModel, self).__init__()
-        # 10 indices so we can use 1..9 directly (0 is unused)
+        # 10 indices for MNIST digits 0..9.
         self.embedding = nn.Embedding(num_tokens, latent_dim)
         
     def forward(self, x):

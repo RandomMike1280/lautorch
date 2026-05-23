@@ -2,35 +2,35 @@
 varol modelWeights = {}
 
 modelWeights["embed"] = {
-    ["min"] = -1.34835410,
-    ["max"] = 3.37456679,
+    ["min"] = -1.25590706,
+    ["max"] = 3.37028551,
     ["rows"] = 10,
     ["cols"] = 4,
     ["dims"] = {10, 4},
-    ["b64"] = "E8kLEyRiC/9nYjCIlV9bpwaANolpXG+akYgAeAm4bKxNdVe1EJZFlg=="
+    ["b64"] = "VoVqAmw3Sf9kRy5XpkluYQd+OZRsSINXfnQAYTuqh6hpVnB+Lo1VnQ=="
 }
 
 modelWeights["b_fc"] = {
-    ["min"] = -1.04680145,
-    ["max"] = 1.16283286,
+    ["min"] = -1.06431162,
+    ["max"] = 1.09731114,
     ["rows"] = 1,
     ["cols"] = 392,
     ["dims"] = {1, 392},
-    ["b64"] = "iV+VOWZDXXSCboujVperoqd0P7uhwEkGaYlUOWszRHY4WZewXhN0Cll2ytNUsLVob6ZPToZFY41faLaVdY1PjDWtnmMy1VGDmHc+OIeYRqySAFKdW7J7/xmWnZynxTVf2MSp1qSuncfQvn9vc0q5sHqEVYFmcrS7dlZRZp6otqpKYJalrVo2WUEuPrWdeMaMfqOygLOzxNa7kNRvmodVIoPDilqVHZh3wZdaqnwgZ6w3llgpIUvCPE8oNnyhx4pqajd/oq2pgqg3aGqwg1xjIaGfrGwhc3Q7L1VNr2E6NaevW24+cyVkYaCRdRS3r7Jjx9iHT82YV52qw7yqo3eESzonPJ6lcm46Ia6dixkvD6iKZVQKSktwpKd5qy5bi5RiS5SXxbSMzK9ud6ChsHOYf4UonaGuTVaPS4cna5cDPjiCeXW+ISxNgIq7m0hFN1RivaO7s7NcnHBhcyxXhnRKuIfJW6FFcDh9IIOznryYPml9gLp+hHljTWiiX5+efTkvlEBZsISzl58="
+    ["b64"] = "7UyKRlM/aKNeiXd4WreqnqJOSYK83006k2xmNHM1aHFEi6JtiiKYJVCCxrU4yrlmmmdJTHxKOmJnlKSlu9RKe1iZf39PoSqRPJV7fZ+OmKacYoyxdN172mdys56owDc0rMS228Dbkb7xw4p1gkdoqG+YZnxQltqlmCZyTKnZwFdPb2yRtk9JUkEjTtiTpuJ8iaTJqdWd9tXuv+kup045NnnGnliLFYRtrqNXdCAlj8MzeFVBMlb/PVcuNWKuxK9MYYqby7iig4s8WWe5iG1YSY20moQ0om0zP3CNp2ZlN6KdkIZKgSJxUHGOblGny7hnrdZvaeGhZJZ7oK2knZVyRzomM6Vpjl5SSsa/Vx83WqSph4QjckONqI6fbDd6qpCBbeKy3c+t+cOYc5OfzICBmp9IsqSnWlGRQXZElbAAMSx+b0BPRi1CdZ7GcTpGOB102rjAw918umRveUxucYZTrl/cZqx0gEl7L1q2lLKhUpCQcYqChIV1n1GJkqB1oU8lpWiExXy7tYQ="
 }
 
 modelWeights["conv1_b"] = {
-    ["min"] = -0.06431782,
-    ["max"] = 0.04155096,
+    ["min"] = -0.09193941,
+    ["max"] = 0.13181856,
     ["rows"] = 1,
     ["cols"] = 4,
     ["dims"] = {1, 4},
-    ["b64"] = "AP8s5Q=="
+    ["b64"] = "fZIA/w=="
 }
 
 modelWeights["conv2_b"] = {
-    ["min"] = 0.08442108,
-    ["max"] = 0.08442108,
+    ["min"] = 0.04377853,
+    ["max"] = 0.04377853,
     ["rows"] = 1,
     ["cols"] = 1,
     ["dims"] = {1, 1},
@@ -38,14 +38,14 @@ modelWeights["conv2_b"] = {
 }
 
 modelWeights["W_fc"] = {
-    ["min"] = -1.55753815,
-    ["max"] = 0.98190928,
+    ["min"] = -1.52356088,
+    ["max"] = 0.93892223,
     ["rows"] = 4,
     ["cols"] = 392,
     ["dims"] = {4, 392},
     ["parts"] = {"W_fc_part1", "W_fc_part2", "W_fc_part3"}
 }
 
-modelWeights["W_fc_part1"] = "uY9RqniGeoWblo+Qmb99lrKKqqDDtqKbxbaghJZ9jWR1c7K2loiKbreqx9TIrsCVqspqaKiQcMuDroN0ma6QoJGwlp12j1qpwpO+jJ+WjrKEdX9sq5OXn6mGpoGfgnFNpbTtmb+GlHikqa+Qn1+slHxsqXWRqbKwf5Zor5ihlLSfjJiRrLOunIFel7p2trBo1Mp56q7l0KCMs7nCr6p8ouL/i5LCtpJ/69KRmqN4vL6wl53ghcZ9kWyql3OYlaJ5rYOVcrGTmn6SeaGXlKiNo56te6yl0KWVr6GQvp6PdoGXjZjKu5lippiRrl+axcO+0siA4a6xn59dqrXHrH+EiamUnJ6VopSkqafIv5+Kkp1yjrOm0oijia6IfImRsIZckJ2puMbJUqR8nKWwccipm4akoJi4yp6rh7B0XoeP0MGE5Ni8homNunqfsJadh4JhpI2ytLaQtZNtymeESIHem3FtqotlbIucqqWes7o0vMZPzpt8m4dcyr12xoym1Wmjd46xqNK1q6tmsomc3+igaauPro/FtqSaWpmnXzyKtGuNlLrGk6m4xJO6c23C1TGNk4iTkYKAjaS8bMl9jOB0RaOEqnCuanmtrkSTrbCfoYN2fMd9xZ3BfKiRb4mCsd2NmqdKyLaHoKKRwrqOiMSqiLKgr4evborBmpGoj4asvIumlrvCacCwQ7aKdYTU"
+modelWeights["W_fc_part1"] = "xZRyonySiX2EfJKlqKxpgKF6uL25nau1rJWfeK12c4VopbaYkYlriqSQys7Aj9hek52QvIx6c851ynyxqsSFtJetlLSQv3mjvGLKuLOnh7OIbnF6h5m4yq2bum68iGBDpbzskL2lkH27qq6RnHe9vJCPvaCUqremlbFfiK+qm52ZuL51q8m2qHaNwKuGjplotLCD9MnytaGmj5ariaJWn8XFlbK1vJKQ04WakrWLsMK+uJThmrOTf5G7mImakZvEyXymi6WEmn2xd6WVhId/rpG0ecnJsK+V1ZqWqq2oeHF7u2+ZlpdfuZeHhkiRvbm+0OvD7rWxlZhuja2sjpyLn6TJq5CnpnuxsqXDusOSh5N4iKKr7YmfbqGnaIF7qIRIpbuQoJnPNp9mTbynpcqckJe2qm+vmpqVdqqTXKudl5ulxcihnYeYjZmdtKOdk5GXso6draOXxJt97SyLYZzvmVKNnXWEcYa4vqebyclmzt94mKFjoI1z18uIzn9fh36xbHanufDZbbiLsXC1+v+Cc6turYuZsai2ZqWdbHWKnleYkL+am664yY6rSarSyXuNuVWCj3tzh5XReLl1jK2FVMZ8vC2gk1OzuYiBYY6Ot4eFon1ps63GjqSob59NpM19dcYz+bV7oL1S0suJc5mVeq6ds6S1gm6nmJKacYicyIKft7y4ftGxhrOfn4bR"
 
 return modelWeights

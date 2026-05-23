@@ -2,23 +2,23 @@
 varol modelWeights = {}
 
 modelWeights["conv1_w"] = {
-    ["min"] = -0.44512156,
-    ["max"] = 0.41445699,
+    ["min"] = -0.49426731,
+    ["max"] = 0.56626260,
     ["rows"] = 4,
     ["cols"] = 8,
     ["dims"] = {4, 8, 3, 3},
-    ["b64"] = "fY2zfZeOpr1Qrq2xZneAYopPoJiVy6TIl2p9lbOsjLnGd7LOebSia8msm3Rfs8aMl614saeOU3iObIyxk36ziX+fpGFrbJdre+3Cxbd1fmtKpqyXeNKUUIkf6sZbrJTHzLZqQViiYsXBlf+mtbNj4cJxdpYXoaNXfZJ8uqQAiNJ4+Z7MrpyNRXBoaZWuN2pnrYmqfHVsjTmwc3eIe6ecm6PElX+Qla2EYHXC4buHm5Fgl6xaW23OXkK4oHzdhFOdnGdDRVJZt8ata3taTp8vsa+kooyK36m1nsjosr3/1d686Ozw/daYcn4J59aGs8K9vKxtHnY0dFmdnZC31fThbIrDVKg5k8j14MTu9uKcy9OOyLzh1dfWR1gsYWJ0G0sW"
+    ["b64"] = "eI+rWYJ8hqpymIyBamdzYXpWhYp2opq3dnWDmaaLfqqwep6zgHx+cZyYkmlajY1/i5R7k4eDYG1nY4yeiYydd2Rxh1RaYGxOcJbPhpKNdo5zPow2UZ+ATlQctJZtu4i+zaBwR7ydmKNzm8Swi6WwnY+CV5lYsIS9bY2QX41SndeB36XJaoJ7PmdkcW1ZTGw8e2x8TFZmeEikfYOYf4yWjpS1lHyaWIhuXInJh5ylgWxOi3aPZnWfPHeVeY20gGtwimpTUlFgg3Kghn5veXl3pqmjnYONwoJyTpS1ur25kaltfoFkoIhZGGIArqBxq6KwtbJ6ULNkr4uqpba2l7ezqpubboJJr8P/y6abnKmApbxisqPKh7WjSF5IVIRxL0JA"
 }
 
 modelWeights["conv2_w"] = {
-    ["min"] = -0.50990736,
-    ["max"] = 0.31888667,
+    ["min"] = -0.45162794,
+    ["max"] = 0.34173506,
     ["rows"] = 1,
     ["cols"] = 4,
     ["dims"] = {1, 4, 3, 3},
-    ["b64"] = "wI9+kU9im2xgaV92SRRDLG13sdH/zdva4f3hXwY5MAAgezun"
+    ["b64"] = "vopvhUVdkWJWa0xXNwEgJWZSm6HMvsbL6f/iXgA6JAM4ZDiw"
 }
 
-modelWeights["W_fc_part3"] = "mKKUiIGonaV6l7Kko5vGeYCzqMFsg3xcdLi7omrzZ8TN06RglcbCnrKjc6qUmo21lbJ2w8bGlKaT0GykhavBurOnhohYyYuRmpBZpJZ803GY3kTdq6Jiw9TRobqT3keV06nvYWKbn8ZmtUhzoqiluau5lpRarZ2Wy4yym8yAb9m0oI6ewLGQi4KRqIiviIhgpIGHuc7RmH/Ce6CqqYDKiZp3qZGou4+5lpmUrqfNeqhWlpqSlZjIkYmQno+TjrafkaerdH+rh29x1KeguJh4vs+rrpybbr6lj82TjYxutqzBxp2txrnHvc+LpZiLtLTIp4aJuauPpH2aSnGvr4hxeXeIvYqcgXGfjHu6dJmOeXmy7tmxpbbUwKQAo4yoqXuVaciGbpuYqoJ7kYjVtbmtp5yRq7DHpqWngrN97YJnmo/CquCgw6WnsqOPoJujqmqKeJm9Z6mLoq+8DpXCj5eBqIu2iKKge6Frn8J+m4WntbKnq6nQcI96dnWOarWUioW4mH58tY+suaeqjr+juZC9u8LCsa2xnYadgrCJpLzKrJOczae73a6d0quww4xxnq2km6DBr3S4jJanl7KaZDCPv0l6pLqIeqS2joGCpo+jlreidIDM0HyjkLm5r+Cvx2uwiZOEj72ruLSKu4G5lrWOZHGPs6S8sYevo7N5nXJ+tt7JqqvJy4I="
+modelWeights["W_fc_part3"] = "wZOwiZmeosV9i8WxqKuvpKzFqct4c3GGbMS9lVfDhJO2zbBKkL6hhaedb52hlJ2xyG+Zx7+okIJukZixkrCu0XathomcrmWplWdhvJB54WeRmlLW2ZxZt73Xl8Cm33Gs0bTXbXmfkcGAmkSsjaWTzqqfxLGMwZ26tbLFtLGfAMTRrK6gp9CVnpaOpWCVoo+isZNTrMXJlZWomZG7n7XOonKWoruWya2rlZCLmprRW5iSk5+jfXvHiG2Es32PatSBiKa6VYO4gJBbysPKkYmSmbexb7q2YpSucd6Fo8Wum6ekpI+zy6PDysSdrI2a193SnHF3tbxyp3aVcJSRu5a3aXuitZTAm3y8i3SjgWyFoG+n/9HDeam9nFaasp+jopN5ebaSrIuky6OSpMbPv5+7qKh3x73PtMKVkc2135SnsJmortN0m5+4wMmgq5C/uJudg5WpoXyVwKDAbpXZrLyevJOQnqirxJSLpbuDmaHJo4pSkKfFa3+onHmaWLahoo2svYiaoZSx2q+qjsaekrh5rbnEbLSnb2K6laeHqLnedainybrHu6aWwZ+VqYOEi56kp5zMyZWsmJW/krGhj2ixq8ampLKRoKumn46MprzAc9Ckh2XQx4aklMTrysGc8JSTdZS6obCWyrJ74oXGjauwZmqivLXSZZy/qHeTf5KGqtXOm6y3z48="
 
 return modelWeights
