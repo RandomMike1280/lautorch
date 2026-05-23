@@ -57,7 +57,7 @@ def get_decoder_state(checkpoint):
         return checkpoint['decoder_state_dict']
     if 'vae_state_dict' in checkpoint:
         vae_state = checkpoint['vae_state_dict']
-        return {
+        decoder_state = {
             'dec_fc.weight': vae_state['dec_fc.weight'],
             'dec_fc.bias': vae_state['dec_fc.bias'],
             'dec_fc_mask_logits': vae_state['dec_fc_mask_logits'],
@@ -66,7 +66,21 @@ def get_decoder_state(checkpoint):
             'dec_conv2.weight': vae_state['dec_conv2.weight'],
             'dec_conv2.bias': vae_state['dec_conv2.bias'],
         }
+        if 'dec_fc_lora_a' in vae_state and 'dec_fc_lora_b' in vae_state:
+            decoder_state['dec_fc_lora_a'] = vae_state['dec_fc_lora_a']
+            decoder_state['dec_fc_lora_b'] = vae_state['dec_fc_lora_b']
+        return decoder_state
     raise KeyError("Checkpoint must contain 'decoder_state_dict' or 'vae_state_dict'.")
+
+def effective_fc_weight(decoder_state, checkpoint):
+    weight = decoder_state['dec_fc.weight']
+    if 'dec_fc_lora_a' not in decoder_state or 'dec_fc_lora_b' not in decoder_state:
+        return weight
+    lora_a = decoder_state['dec_fc_lora_a']
+    lora_b = decoder_state['dec_fc_lora_b']
+    rank = lora_a.shape[0]
+    alpha = checkpoint.get('lora_alpha', 1.0)
+    return weight + (alpha / rank) * (lora_b @ lora_a)
 
 def split_b64(b64_str, parts):
     part_size = (len(b64_str) + parts - 1) // parts
@@ -124,7 +138,7 @@ def main():
     decoder_state = get_decoder_state(checkpoint)
     
     embed_weight = checkpoint['embed_state_dict']['embedding.weight']
-    dec_fc_weight = decoder_state['dec_fc.weight']
+    dec_fc_weight = effective_fc_weight(decoder_state, checkpoint)
     dec_fc_bias = decoder_state['dec_fc.bias']
     dec_fc_mask_logits = decoder_state.get('dec_fc_mask_logits', torch.ones_like(dec_fc_weight))
     dec_conv1_weight = decoder_state['dec_conv1.weight']

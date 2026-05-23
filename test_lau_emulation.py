@@ -235,7 +235,11 @@ def main():
     conv2_b = decode_weight(weights['conv2_b'])
 
     checkpoint = torch.load('vae_and_embed.pth', map_location='cpu')
-    vae = TinyVAE(latent_dim=checkpoint['latent_dim'])
+    vae = TinyVAE(
+        latent_dim=checkpoint['latent_dim'],
+        lora_rank=checkpoint.get('lora_rank', 0),
+        lora_alpha=checkpoint.get('lora_alpha', 1.0),
+    )
     token_emb = TokenEmbeddingModel(num_tokens=10, latent_dim=checkpoint['latent_dim'])
     vae.load_state_dict(checkpoint['vae_state_dict'])
     token_emb.load_state_dict(checkpoint['embed_state_dict'])

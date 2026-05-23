@@ -52,7 +52,11 @@ def main():
     checkpoint = torch.load(checkpoint_path, map_location=torch.device('cpu'))
     
     latent_dim = checkpoint.get('latent_dim', 8)
-    vae = TinyVAE(latent_dim=latent_dim)
+    vae = TinyVAE(
+        latent_dim=latent_dim,
+        lora_rank=checkpoint.get('lora_rank', 0),
+        lora_alpha=checkpoint.get('lora_alpha', 1.0),
+    )
     token_embedding = TokenEmbeddingModel(num_tokens=10, latent_dim=latent_dim)
     
     vae.load_state_dict(checkpoint['vae_state_dict'])

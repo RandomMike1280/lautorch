@@ -20,7 +20,8 @@ def loss_function(recon_x, x, mu, logvar):
     return BCE + KLD, BCE, KLD
 
 def train(epochs=10, batch_size=128, lr=1e-3, latent_dim=4,
-          sparsity_lambda=10.0, temp_start=1.0, temp_end=0.01):
+          sparsity_lambda=10.0, temp_start=1.0, temp_end=0.01,
+          lora_rank=3, lora_alpha=2.0):
     # Set seed for reproducibility
     torch.manual_seed(42)
     
@@ -38,7 +39,7 @@ def train(epochs=10, batch_size=128, lr=1e-3, latent_dim=4,
     test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
     
     # Initialize convolutional VAE and Token Embedding models
-    vae = TinyVAE(latent_dim=latent_dim)
+    vae = TinyVAE(latent_dim=latent_dim, lora_rank=lora_rank, lora_alpha=lora_alpha)
     token_embedding = TokenEmbeddingModel(num_tokens=10, latent_dim=latent_dim)
     
     # Optimizers
@@ -49,8 +50,13 @@ def train(epochs=10, batch_size=128, lr=1e-3, latent_dim=4,
         sum(p.numel() for p in vae.dec_conv1.parameters()) +
         sum(p.numel() for p in vae.dec_conv2.parameters())
     )
+    lora_params = sum(
+        p.numel() for p in (vae.dec_fc_lora_a, vae.dec_fc_lora_b)
+        if p is not None
+    )
     print(f"Conv TinyVAE Parameters: {sum(p.numel() for p in vae.parameters()):,}")
     print(f"Exported Decoder Parameters: {decoder_params:,}")
+    print(f"LoRA Decoder Parameters: {lora_params:,} (rank={lora_rank}, alpha={lora_alpha})")
     print(f"TokenEmbedding Parameters: {sum(p.numel() for p in token_embedding.parameters()):,}")
     print(f"Sparsity lambda: {sparsity_lambda}")
     print("Starting joint training on CPU...")
@@ -137,16 +143,20 @@ def train(epochs=10, batch_size=128, lr=1e-3, latent_dim=4,
         'vae_state_dict': vae.state_dict(),
         'embed_state_dict': token_embedding.state_dict(),
         'latent_dim': latent_dim,
-        'architecture': 'conv_tiny_vae_sparse_fc_v1',
+        'architecture': 'conv_tiny_vae_sparse_fc_lora_v2',
         'mask_temperature': vae.mask_temperature,
         'sparsity_lambda': sparsity_lambda,
+        'lora_rank': lora_rank,
+        'lora_alpha': lora_alpha,
     }
     torch.save(checkpoint, 'vae_and_embed.pth')
     print("Training finished successfully. Saved model weights to 'vae_and_embed.pth'.")
 
     decoder_checkpoint = {
         'decoder_state_dict': {
-            'dec_fc.weight': vae.state_dict()['dec_fc.weight'],
+            # Fold LoRA into the exported decoder so Lau and minimal inference
+            # still consume the same sparse FC architecture.
+            'dec_fc.weight': vae.effective_dec_fc_weight().detach(),
             'dec_fc.bias': vae.state_dict()['dec_fc.bias'],
             'dec_fc_mask_logits': vae.state_dict()['dec_fc_mask_logits'],
             'dec_conv1.weight': vae.state_dict()['dec_conv1.weight'],
@@ -156,9 +166,12 @@ def train(epochs=10, batch_size=128, lr=1e-3, latent_dim=4,
         },
         'embed_state_dict': token_embedding.state_dict(),
         'latent_dim': latent_dim,
-        'architecture': 'conv_tiny_vae_sparse_fc_v1',
+        'architecture': 'conv_tiny_vae_sparse_fc_lora_v2',
         'mask_temperature': vae.mask_temperature,
         'sparsity_lambda': sparsity_lambda,
+        'lora_rank': lora_rank,
+        'lora_alpha': lora_alpha,
+        'lora_folded': True,
     }
     torch.save(decoder_checkpoint, 'decoder_and_embed.pth')
     print("Saved exported decoder weights to 'decoder_and_embed.pth'.")

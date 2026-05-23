@@ -8,9 +8,11 @@ class TinyVAE(nn.Module):
     MNIST images. The exported decoder has far fewer weights than the previous
     fully connected decoder while keeping decode(z) as a flat 784-pixel output.
     """
-    def __init__(self, latent_dim=8):
+    def __init__(self, latent_dim=8, lora_rank=0, lora_alpha=1.0):
         super(TinyVAE, self).__init__()
         self.latent_dim = latent_dim
+        self.lora_rank = lora_rank
+        self.lora_alpha = lora_alpha
 
         # Encoder: 1x28x28 -> 8x14x14 -> 16x7x7 -> latent stats
         self.enc_conv1 = nn.Conv2d(1, 8, kernel_size=3, stride=2, padding=1)
@@ -21,10 +23,25 @@ class TinyVAE(nn.Module):
         # Decoder: latent -> 8x7x7 -> 4x14x14 -> 1x28x28
         self.dec_fc = nn.Linear(latent_dim, 8 * 7 * 7)
         self.dec_fc_mask_logits = nn.Parameter(torch.full_like(self.dec_fc.weight, 2.0))
+        if lora_rank > 0:
+            self.dec_fc_lora_a = nn.Parameter(torch.empty(lora_rank, latent_dim))
+            self.dec_fc_lora_b = nn.Parameter(torch.zeros(8 * 7 * 7, lora_rank))
+            nn.init.kaiming_uniform_(self.dec_fc_lora_a, a=5 ** 0.5)
+        else:
+            self.register_parameter("dec_fc_lora_a", None)
+            self.register_parameter("dec_fc_lora_b", None)
         self.mask_temperature = 1.0
         self.use_hard_mask = False
         self.dec_conv1 = nn.Conv2d(8, 4, kernel_size=3, padding=1)
         self.dec_conv2 = nn.Conv2d(4, 1, kernel_size=3, padding=1)
+
+    def dec_fc_lora_delta(self):
+        if self.lora_rank <= 0:
+            return 0
+        return (self.lora_alpha / self.lora_rank) * (self.dec_fc_lora_b @ self.dec_fc_lora_a)
+
+    def effective_dec_fc_weight(self):
+        return self.dec_fc.weight + self.dec_fc_lora_delta()
 
     def fc_mask(self):
         if self.use_hard_mask:
@@ -52,7 +69,7 @@ class TinyVAE(nn.Module):
         
     def decode(self, z):
         # z shape: (batch_size, latent_dim)
-        h = F.relu(F.linear(z, self.dec_fc.weight * self.fc_mask(), self.dec_fc.bias))
+        h = F.relu(F.linear(z, self.effective_dec_fc_weight() * self.fc_mask(), self.dec_fc.bias))
         h = h.view(-1, 8, 7, 7)
         h = F.interpolate(h, scale_factor=2, mode='nearest')
         h = F.relu(self.dec_conv1(h))
