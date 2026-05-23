@@ -20,8 +20,22 @@ class TinyVAE(nn.Module):
 
         # Decoder: latent -> 8x7x7 -> 4x14x14 -> 1x28x28
         self.dec_fc = nn.Linear(latent_dim, 8 * 7 * 7)
+        self.dec_fc_mask_logits = nn.Parameter(torch.full_like(self.dec_fc.weight, 2.0))
+        self.mask_temperature = 1.0
+        self.use_hard_mask = False
         self.dec_conv1 = nn.Conv2d(8, 4, kernel_size=3, padding=1)
         self.dec_conv2 = nn.Conv2d(4, 1, kernel_size=3, padding=1)
+
+    def fc_mask(self):
+        if self.use_hard_mask:
+            return (self.dec_fc_mask_logits > 0).float()
+        return torch.sigmoid(self.dec_fc_mask_logits / self.mask_temperature)
+
+    def fc_mask_sum(self):
+        return self.fc_mask().sum()
+
+    def fc_active_count(self):
+        return int((self.dec_fc_mask_logits > 0).sum().item())
         
     def encode(self, x):
         # Accept either flat (batch, 784) inputs or image (batch, 1, 28, 28) inputs.
@@ -38,7 +52,7 @@ class TinyVAE(nn.Module):
         
     def decode(self, z):
         # z shape: (batch_size, latent_dim)
-        h = F.relu(self.dec_fc(z))
+        h = F.relu(F.linear(z, self.dec_fc.weight * self.fc_mask(), self.dec_fc.bias))
         h = h.view(-1, 8, 7, 7)
         h = F.interpolate(h, scale_factor=2, mode='nearest')
         h = F.relu(self.dec_conv1(h))

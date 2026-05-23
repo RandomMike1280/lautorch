@@ -1,53 +1,174 @@
--- Matrix Multiplication Module for Lau Language
--- Performs matrix multiplication: C = A * B
-
-varol lautorch = {}
-
--- Matrix multiplication function
-lautorch.matmul = func(matrixA, matrixB)
-    -- Get dimensions of matrix A
-    varol rowsA, colsA = #matrixA, #matrixA[1]
-    
-    -- Get dimensions of matrix B
-    varol colsB = #matrixB[1]
-    
-    -- Check if matrices can be multiplied
-    if colsA ~= #matrixB then
-        print("ERROR: Cannot multiply matrices. Columns of A must equal rows of B.")
-        return null
-    end
-    
-    varol result = {}
-
-    -- Perform matrix multiplication
-    for i = 1, rowsA do
-        result[i] = {}
-        for j = 1, colsB do
-            varol sum = 0
-            for k = 1, colsA do
-                sum = sum + matrixA[i][k] * matrixB[k][j]
-            end
-            result[i][j] = sum
-        end
-    end
-    
-    return result
+varol lt={}
+varol d1,d2,d3=req("weights_data_1.laum"),req("weights_data_2.laum"),req("weights_data_3.laum")
+varol A={["A"]=0,["B"]=1,["C"]=2,["D"]=3,["E"]=4,["F"]=5,["G"]=6,["H"]=7,["I"]=8,["J"]=9,["K"]=10,["L"]=11,["M"]=12,["N"]=13,["O"]=14,["P"]=15,["Q"]=16,["R"]=17,["S"]=18,["T"]=19,["U"]=20,["V"]=21,["W"]=22,["X"]=23,["Y"]=24,["Z"]=25,["a"]=26,["b"]=27,["c"]=28,["d"]=29,["e"]=30,["f"]=31,["g"]=32,["h"]=33,["i"]=34,["j"]=35,["k"]=36,["l"]=37,["m"]=38,["n"]=39,["o"]=40,["p"]=41,["q"]=42,["r"]=43,["s"]=44,["t"]=45,["u"]=46,["v"]=47,["w"]=48,["x"]=49,["y"]=50,["z"]=51,["0"]=52,["1"]=53,["2"]=54,["3"]=55,["4"]=56,["5"]=57,["6"]=58,["7"]=59,["8"]=60,["9"]=61,["+"]=62,["/"]=63,["="]=0}
+func e(n)
+ if d1[n] then return d1[n] end
+ if d2[n] then return d2[n] end
+ return d3[n]
 end
-
--- Fixed LauTorch projection: z(4) * W(4x392) + bias, with ReLU fused.
-lautorch.fastrelu = func(z, W, bias)
-    varol out = {}
-    out[1] = {}
-    for j = 1, #W[1] do
-        varol s = bias[1][j]
-        s = s + z[1] * W[1][j] + z[2] * W[2][j] + z[3] * W[3][j] + z[4] * W[4][j]
-        if s < 0 then
-            out[1][j] = 0
-        else
-            out[1][j] = s
-        end
-    end
-    return out
+func v(e,r,b)
+ return e["min"]+(b/255.0)*r
 end
-
-return lautorch
+func dv(s,o,k,e,r)
+ varol i=1
+ while i<=#s do
+  varol c3,c4=string.sub(s,i+2,i+2),string.sub(s,i+3,i+3)
+  varol n=((A[string.sub(s,i,i)]*64+A[string.sub(s,i+1,i+1)])*64+A[c3])*64+A[c4]
+  o[k]=v(e,r,math.floor(n/65536))
+  k=k+1
+  if c3~="=" then
+   o[k]=v(e,r,math.floor(n/256)%256)
+   k=k+1
+  end
+  if c4~="=" then
+   o[k]=v(e,r,n%256)
+   k=k+1
+  end
+  i=i+4
+ end
+ return k
+end
+func pc(c,ci,k,x)
+ if k>400 then
+  ci=ci+1
+  c[ci]={}
+  k=1
+ end
+ c[ci][k]=x
+ return {ci,k+1}
+end
+func dvc(s,c,ci,k,e,r)
+ varol i=1
+ while i<=#s do
+  varol c3,c4=string.sub(s,i+2,i+2),string.sub(s,i+3,i+3)
+  varol n=((A[string.sub(s,i,i)]*64+A[string.sub(s,i+1,i+1)])*64+A[c3])*64+A[c4]
+  varol p=pc(c,ci,k,v(e,r,math.floor(n/65536)))
+  ci=p[1]
+  k=p[2]
+  if c3~="=" then
+   p=pc(c,ci,k,v(e,r,math.floor(n/256)%256))
+   ci=p[1]
+   k=p[2]
+  end
+  if c4~="=" then
+   p=pc(c,ci,k,v(e,r,n%256))
+   ci=p[1]
+   k=p[2]
+  end
+  i=i+4
+ end
+ return {ci,k}
+end
+func dm(s,m,k,e,r)
+ varol i=1
+ while i<=#s do
+  varol c3,c4=string.sub(s,i+2,i+2),string.sub(s,i+3,i+3)
+  varol n=((A[string.sub(s,i,i)]*64+A[string.sub(s,i+1,i+1)])*64+A[c3])*64+A[c4]
+  varol row=math.floor((k-1)/e["cols"])+1
+  m[row][k-(row-1)*e["cols"]]=v(e,r,math.floor(n/65536))
+  k=k+1
+  if c3~="=" then
+   row=math.floor((k-1)/e["cols"])+1
+   m[row][k-(row-1)*e["cols"]]=v(e,r,math.floor(n/256)%256)
+   k=k+1
+  end
+  if c4~="=" then
+   row=math.floor((k-1)/e["cols"])+1
+   m[row][k-(row-1)*e["cols"]]=v(e,r,n%256)
+   k=k+1
+  end
+  i=i+4
+ end
+ return k
+end
+func vals(x)
+ varol r,o,k=x["max"]-x["min"],{},1
+ if x["b64"] then
+  k=dv(x["b64"],o,k,x,r)
+ else
+  varol p=x["parts"]
+  for j=1,#p do
+   k=dv(e(p[j]),o,k,x,r)
+  end
+ end
+ return o
+end
+func valsc(x)
+ varol r,c,ci,k=x["max"]-x["min"],{},1,1
+ c[1]={}
+ if x["b64"] then
+  dvc(x["b64"],c,ci,k,x,r)
+ else
+  varol p=x["parts"]
+  for j=1,#p do
+   varol q=dvc(e(p[j]),c,ci,k,x,r)
+   ci=q[1]
+   k=q[2]
+  end
+ end
+ return c
+end
+func mat(n)
+ varol x=e(n)
+ varol r,m,k=x["max"]-x["min"],{},1
+ for i=1,x["rows"] do
+  m[i]={}
+ end
+ if x["b64"] then
+  k=dm(x["b64"],m,k,x,r)
+ else
+  varol p=x["parts"]
+  for j=1,#p do
+   k=dm(e(p[j]),m,k,x,r)
+  end
+ end
+ return m
+end
+lt.sparserelu=func(z,SW,M,b)
+ varol o,k={},1
+ o[1]={}
+ for j=1,#M do
+  varol s,m=b[1][j],M[j]
+  if m>=8 then
+   s=s+z[4]*SW[math.floor((k-1)/400)+1][((k-1)%400)+1]
+   k=k+1
+   m=m-8
+  end
+  if m>=4 then
+   s=s+z[3]*SW[math.floor((k-1)/400)+1][((k-1)%400)+1]
+   k=k+1
+   m=m-4
+  end
+  if m>=2 then
+   s=s+z[2]*SW[math.floor((k-1)/400)+1][((k-1)%400)+1]
+   k=k+1
+   m=m-2
+  end
+  if m>=1 then
+   s=s+z[1]*SW[math.floor((k-1)/400)+1][((k-1)%400)+1]
+   k=k+1
+  end
+  if s<0 then o[1][j]=0 else o[1][j]=s end
+ end
+ return o
+end
+varol W={}
+print("LauTorch: load embed")
+W["E"]=mat("embed")
+print("LauTorch: load sparse weights")
+W["SW"]=valsc(e("SW"))
+print("LauTorch: load sparse mask")
+W["M"]=vals(e("SM"))
+print("LauTorch: load fc bias")
+W["B"]=mat("b_fc")
+print("LauTorch: load conv1 weights")
+W["C1"]=vals(e("conv1_w"))
+print("LauTorch: load conv1 bias")
+W["B1"]=mat("conv1_b")
+print("LauTorch: load conv2 weights")
+W["C2"]=vals(e("conv2_w"))
+print("LauTorch: load conv2 bias")
+W["B2"]=mat("conv2_b")
+print("LauTorch: weights loaded")
+lt.W=W
+return lt

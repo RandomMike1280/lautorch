@@ -25,11 +25,19 @@ class TinyDecoder(nn.Module):
     def __init__(self, latent_dim=8):
         super(TinyDecoder, self).__init__()
         self.dec_fc = nn.Linear(latent_dim, 8 * 7 * 7)
+        self.dec_fc_mask_logits = nn.Parameter(torch.empty(8 * 7 * 7, latent_dim))
+        self.mask_temperature = 1.0
+        self.use_hard_mask = True
         self.dec_conv1 = nn.Conv2d(8, 4, kernel_size=3, padding=1)
         self.dec_conv2 = nn.Conv2d(4, 1, kernel_size=3, padding=1)
+
+    def fc_mask(self):
+        if self.use_hard_mask:
+            return (self.dec_fc_mask_logits > 0).float()
+        return torch.sigmoid(self.dec_fc_mask_logits / self.mask_temperature)
         
     def forward(self, z):
-        h = F.relu(self.dec_fc(z))
+        h = F.relu(F.linear(z, self.dec_fc.weight * self.fc_mask(), self.dec_fc.bias))
         h = h.view(-1, 8, 7, 7)
         h = F.interpolate(h, scale_factor=2, mode='nearest')
         h = F.relu(self.dec_conv1(h))

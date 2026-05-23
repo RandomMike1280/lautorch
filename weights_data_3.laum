@@ -1,24 +1,15 @@
 -- Quantized weights data for Lau MNIST VAE
 varol modelWeights = {}
 
-modelWeights["conv1_w"] = {
-    ["min"] = -0.49426731,
-    ["max"] = 0.56626260,
-    ["rows"] = 4,
-    ["cols"] = 8,
-    ["dims"] = {4, 8, 3, 3},
-    ["b64"] = "eI+rWYJ8hqpymIyBamdzYXpWhYp2opq3dnWDmaaLfqqwep6zgHx+cZyYkmlajY1/i5R7k4eDYG1nY4yeiYydd2Rxh1RaYGxOcJbPhpKNdo5zPow2UZ+ATlQctJZtu4i+zaBwR7ydmKNzm8Swi6WwnY+CV5lYsIS9bY2QX41SndeB36XJaoJ7PmdkcW1ZTGw8e2x8TFZmeEikfYOYf4yWjpS1lHyaWIhuXInJh5ylgWxOi3aPZnWfPHeVeY20gGtwimpTUlFgg3Kghn5veXl3pqmjnYONwoJyTpS1ur25kaltfoFkoIhZGGIArqBxq6KwtbJ6ULNkr4uqpba2l7ezqpubboJJr8P/y6abnKmApbxisqPKh7WjSF5IVIRxL0JA"
-}
-
 modelWeights["conv2_w"] = {
-    ["min"] = -0.45162794,
-    ["max"] = 0.34173506,
+    ["min"] = -0.48844880,
+    ["max"] = 0.33735216,
     ["rows"] = 1,
     ["cols"] = 4,
     ["dims"] = {1, 4, 3, 3},
-    ["b64"] = "vopvhUVdkWJWa0xXNwEgJWZSm6HMvsbL6f/iXgA6JAM4ZDiw"
+    ["b64"] = "w492i0pglmZabEdZPAAmNHBapK7XxcTP/P/rWgJFIw1LWTuz"
 }
 
-modelWeights["W_fc_part3"] = "wZOwiZmeosV9i8WxqKuvpKzFqct4c3GGbMS9lVfDhJO2zbBKkL6hhaedb52hlJ2xyG+Zx7+okIJukZixkrCu0XathomcrmWplWdhvJB54WeRmlLW2ZxZt73Xl8Cm33Gs0bTXbXmfkcGAmkSsjaWTzqqfxLGMwZ26tbLFtLGfAMTRrK6gp9CVnpaOpWCVoo+isZNTrMXJlZWomZG7n7XOonKWoruWya2rlZCLmprRW5iSk5+jfXvHiG2Es32PatSBiKa6VYO4gJBbysPKkYmSmbexb7q2YpSucd6Fo8Wum6ekpI+zy6PDysSdrI2a193SnHF3tbxyp3aVcJSRu5a3aXuitZTAm3y8i3SjgWyFoG+n/9HDeam9nFaasp+jopN5ebaSrIuky6OSpMbPv5+7qKh3x73PtMKVkc2135SnsJmortN0m5+4wMmgq5C/uJudg5WpoXyVwKDAbpXZrLyevJOQnqirxJSLpbuDmaHJo4pSkKfFa3+onHmaWLahoo2svYiaoZSx2q+qjsaekrh5rbnEbLSnb2K6laeHqLnedainybrHu6aWwZ+VqYOEi56kp5zMyZWsmJW/krGhj2ixq8ampLKRoKumn46MprzAc9Ckh2XQx4aklMTrysGc8JSTdZS6obCWyrJ74oXGjauwZmqivLXSZZy/qHeTf5KGqtXOm6y3z48="
+modelWeights["SW_part3"] = "r6lHi5u+kYOdxclYibJkvwC5kENcqebNkIh7d5PinqWYjYCrnaZt0pqxfmefjJrVmFigzMLVXMmfb53E/5Chq7fBn5xuUMSVhsSTa5JLnnKvnImaelVnjIuFNG6KopZ9m5x22mx+mJmSq47poLdpgnFii7l3UJ5+knLBqmnKX7Wgt42BrKdGmXyDp9mNXbF0iW5ObKjUMFGOyjDC"
 
 return modelWeights

@@ -1,92 +1,8 @@
-varol mm,d1,d2,d3=req("matmul.laum"),req("weights_data_1.laum"),req("weights_data_2.laum"),req("weights_data_3.laum")
 varol NOISE=0.1
-varol A={["A"]=0,["B"]=1,["C"]=2,["D"]=3,["E"]=4,["F"]=5,["G"]=6,["H"]=7,["I"]=8,["J"]=9,["K"]=10,["L"]=11,["M"]=12,["N"]=13,["O"]=14,["P"]=15,["Q"]=16,["R"]=17,["S"]=18,["T"]=19,["U"]=20,["V"]=21,["W"]=22,["X"]=23,["Y"]=24,["Z"]=25,["a"]=26,["b"]=27,["c"]=28,["d"]=29,["e"]=30,["f"]=31,["g"]=32,["h"]=33,["i"]=34,["j"]=35,["k"]=36,["l"]=37,["m"]=38,["n"]=39,["o"]=40,["p"]=41,["q"]=42,["r"]=43,["s"]=44,["t"]=45,["u"]=46,["v"]=47,["w"]=48,["x"]=49,["y"]=50,["z"]=51,["0"]=52,["1"]=53,["2"]=54,["3"]=55,["4"]=56,["5"]=57,["6"]=58,["7"]=59,["8"]=60,["9"]=61,["+"]=62,["/"]=63,["="]=0}
-
-func ent(n)
- if d1[n] then return d1[n] end
- if d2[n] then return d2[n] end
- return d3[n]
-end
-
-func val(e,r,b)
- return e["min"]+(b/255.0)*r
-end
-
-func decv(s,v,k,e,r)
- varol i=1
- while i<=#s do
-  varol c3,c4=string.sub(s,i+2,i+2),string.sub(s,i+3,i+3)
-  varol n=((A[string.sub(s,i,i)]*64+A[string.sub(s,i+1,i+1)])*64+A[c3])*64+A[c4]
-  v[k]=val(e,r,math.floor(n/65536))
-  k=k+1
-  if c3~="=" then
-   v[k]=val(e,r,math.floor(n/256)%256)
-   k=k+1
-  end
-  if c4~="=" then
-   v[k]=val(e,r,n%256)
-   k=k+1
-  end
-  i=i+4
- end
- return k
-end
-
-func decm(s,m,k,e,r)
- varol i=1
- while i<=#s do
-  varol c3,c4=string.sub(s,i+2,i+2),string.sub(s,i+3,i+3)
-  varol n=((A[string.sub(s,i,i)]*64+A[string.sub(s,i+1,i+1)])*64+A[c3])*64+A[c4]
-  varol row=math.floor((k-1)/e["cols"])+1
-  m[row][k-(row-1)*e["cols"]]=val(e,r,math.floor(n/65536))
-  k=k+1
-  if c3~="=" then
-   row=math.floor((k-1)/e["cols"])+1
-   m[row][k-(row-1)*e["cols"]]=val(e,r,math.floor(n/256)%256)
-   k=k+1
-  end
-  if c4~="=" then
-   row=math.floor((k-1)/e["cols"])+1
-   m[row][k-(row-1)*e["cols"]]=val(e,r,n%256)
-   k=k+1
-  end
-  i=i+4
- end
- return k
-end
-
-func vals(e)
- varol r,v,k=e["max"]-e["min"],{},1
- if e["b64"] then
-  k=decv(e["b64"],v,k,e,r)
- else
-  varol p=e["parts"]
-  for j=1,#p do
-   k=decv(ent(p[j]),v,k,e,r)
-  end
- end
- return v
-end
-
-func mat(n)
- varol e=ent(n)
- varol rg,m,k=e["max"]-e["min"],{},1
- for r=1,e["rows"] do
-  m[r]={}
- end
- if e["b64"] then
-  k=decm(e["b64"],m,k,e,rg)
- else
-  varol p=e["parts"]
-  for j=1,#p do
-   k=decm(ent(p[j]),m,k,e,rg)
-  end
- end
- return m
-end
-
 print("LauTorch: loading weights...")
-varol E,W,B,C1,B1,C2,B2=mat("embed"),mat("W_fc"),mat("b_fc"),vals(ent("conv1_w")),mat("conv1_b"),vals(ent("conv2_w")),mat("conv2_b")
+varol mm=req("matmul.laum")
+varol W=mm.W
+varol E,SW,M,B,C1,B1,C2,B2=W["E"],W["SW"],W["M"],W["B"],W["C1"],W["B1"],W["C2"],W["B2"]
 print("LauTorch: ready")
 
 func feat(v,ch,h,w)
@@ -181,7 +97,7 @@ end
 func fwd(t)
  varol z={}
  for i=1,#E[t+1] do z[i]=E[t+1][i]+(math.random(-100,100)/100.0)*NOISE end
- varol h=mm.fastrelu(z,W,B)
+ varol h=mm.sparserelu(z,SW,M,B)
  varol f=feat(h[1],8,7,7)
  f=up(f,8,7,7)
  f=cv(f,C1,B1,8,4,14,14)

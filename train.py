@@ -19,7 +19,8 @@ def loss_function(recon_x, x, mu, logvar):
     
     return BCE + KLD, BCE, KLD
 
-def train(epochs=10, batch_size=128, lr=1e-3, latent_dim=4):
+def train(epochs=10, batch_size=128, lr=1e-3, latent_dim=4,
+          sparsity_lambda=10.0, temp_start=1.0, temp_end=0.01):
     # Set seed for reproducibility
     torch.manual_seed(42)
     
@@ -51,9 +52,12 @@ def train(epochs=10, batch_size=128, lr=1e-3, latent_dim=4):
     print(f"Conv TinyVAE Parameters: {sum(p.numel() for p in vae.parameters()):,}")
     print(f"Exported Decoder Parameters: {decoder_params:,}")
     print(f"TokenEmbedding Parameters: {sum(p.numel() for p in token_embedding.parameters()):,}")
+    print(f"Sparsity lambda: {sparsity_lambda}")
     print("Starting joint training on CPU...")
     
     for epoch in range(1, epochs + 1):
+        progress = (epoch - 1) / max(1, epochs - 1)
+        vae.mask_temperature = temp_start * ((temp_end / temp_start) ** progress)
         vae.train()
         token_embedding.train()
         train_loss = 0.0
@@ -61,6 +65,7 @@ def train(epochs=10, batch_size=128, lr=1e-3, latent_dim=4):
         train_vae_kld = 0.0
         train_embed_loss = 0.0
         train_align_loss = 0.0
+        train_sparse_loss = 0.0
         
         for batch_idx, (data, targets) in enumerate(train_loader):
             # Flatten image data
@@ -99,8 +104,8 @@ def train(epochs=10, batch_size=128, lr=1e-3, latent_dim=4):
                 embed_recon = torch.tensor(0.0)
                 embed_align = torch.tensor(0.0)
                 
-            # Joint objective
-            total_loss = vae_loss + embed_loss
+            sparse_loss = sparsity_lambda * vae.fc_mask_sum()
+            total_loss = vae_loss + embed_loss + sparse_loss
             total_loss.backward()
             
             optimizer.step()
@@ -111,23 +116,30 @@ def train(epochs=10, batch_size=128, lr=1e-3, latent_dim=4):
             train_vae_kld += kld.item()
             train_embed_loss += embed_recon.item()
             train_align_loss += embed_align.item()
+            train_sparse_loss += sparse_loss.item()
             
         # Average epoch metrics
         num_samples = len(train_loader.dataset)
         num_embed_samples = sum((train_dataset.targets >= 0) & (train_dataset.targets <= 9)).item()
         
         print(f"Epoch {epoch:02d} | "
+              f"Temp: {vae.mask_temperature:.4f} | "
               f"VAE BCE: {train_vae_bce/num_samples:.2f} | "
               f"KLD: {train_vae_kld/num_samples:.2f} | "
               f"Embed Recon: {train_embed_loss/num_embed_samples:.2f} | "
-              f"Embed Align: {train_align_loss/num_embed_samples:.4f}")
+              f"Embed Align: {train_align_loss/num_embed_samples:.4f} | "
+              f"Mask Sum: {vae.fc_mask_sum().item():.1f} | "
+              f"Active: {vae.fc_active_count()}/1568 | "
+              f"Sparse Loss: {train_sparse_loss/len(train_loader):.1f}")
               
     # Save trained model weights
     checkpoint = {
         'vae_state_dict': vae.state_dict(),
         'embed_state_dict': token_embedding.state_dict(),
         'latent_dim': latent_dim,
-        'architecture': 'conv_tiny_vae_v1'
+        'architecture': 'conv_tiny_vae_sparse_fc_v1',
+        'mask_temperature': vae.mask_temperature,
+        'sparsity_lambda': sparsity_lambda,
     }
     torch.save(checkpoint, 'vae_and_embed.pth')
     print("Training finished successfully. Saved model weights to 'vae_and_embed.pth'.")
@@ -136,6 +148,7 @@ def train(epochs=10, batch_size=128, lr=1e-3, latent_dim=4):
         'decoder_state_dict': {
             'dec_fc.weight': vae.state_dict()['dec_fc.weight'],
             'dec_fc.bias': vae.state_dict()['dec_fc.bias'],
+            'dec_fc_mask_logits': vae.state_dict()['dec_fc_mask_logits'],
             'dec_conv1.weight': vae.state_dict()['dec_conv1.weight'],
             'dec_conv1.bias': vae.state_dict()['dec_conv1.bias'],
             'dec_conv2.weight': vae.state_dict()['dec_conv2.weight'],
@@ -143,7 +156,9 @@ def train(epochs=10, batch_size=128, lr=1e-3, latent_dim=4):
         },
         'embed_state_dict': token_embedding.state_dict(),
         'latent_dim': latent_dim,
-        'architecture': 'conv_tiny_vae_v1'
+        'architecture': 'conv_tiny_vae_sparse_fc_v1',
+        'mask_temperature': vae.mask_temperature,
+        'sparsity_lambda': sparsity_lambda,
     }
     torch.save(decoder_checkpoint, 'decoder_and_embed.pth')
     print("Saved exported decoder weights to 'decoder_and_embed.pth'.")

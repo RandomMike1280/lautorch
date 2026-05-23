@@ -57,6 +57,7 @@ def main():
     
     vae.load_state_dict(checkpoint['vae_state_dict'])
     token_embedding.load_state_dict(checkpoint['embed_state_dict'])
+    vae.use_hard_mask = True
     
     vae.eval()
     token_embedding.eval()

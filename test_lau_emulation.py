@@ -178,11 +178,33 @@ def decode_flat_weight(entry):
     byte_list = b64_to_bytes(entry['b64'])
     return dequantize(byte_list, entry['min'], entry['max'])
 
-def lau_forward(digit, embed, W_fc, b_fc, conv1_w, conv1_b, conv2_w, conv2_b):
+def sparse_relu(z, sparse_weights, sparse_masks, bias):
+    out = [[]]
+    k = 0
+    for j, raw_mask in enumerate(sparse_masks):
+        s = bias[0][j]
+        mask = int(round(raw_mask))
+        if mask >= 8:
+            s += z[3] * sparse_weights[k]
+            k += 1
+            mask -= 8
+        if mask >= 4:
+            s += z[2] * sparse_weights[k]
+            k += 1
+            mask -= 4
+        if mask >= 2:
+            s += z[1] * sparse_weights[k]
+            k += 1
+            mask -= 2
+        if mask >= 1:
+            s += z[0] * sparse_weights[k]
+            k += 1
+        out[0].append(max(0, s))
+    return out
+
+def lau_forward(digit, embed, sparse_weights, sparse_masks, b_fc, conv1_w, conv1_b, conv2_w, conv2_b):
     z_lau = [embed[digit]]
-    h = matmul(z_lau, W_fc)
-    h = add_bias(h, b_fc)
-    h = relu(h)
+    h = sparse_relu(z_lau[0], sparse_weights, sparse_masks, b_fc)
 
     feature = reshape_feature(h[0], 8, 7, 7)
     feature = upsample_nearest_2x(feature)
@@ -204,7 +226,8 @@ def main():
         'weights_data_3.laum',
     ))
     embed = decode_weight(weights['embed'])
-    W_fc = decode_weight(weights['W_fc'])
+    sparse_weights = decode_flat_weight(weights['SW'])
+    sparse_masks = decode_flat_weight(weights['SM'])
     b_fc = decode_weight(weights['b_fc'])
     conv1_w = decode_flat_weight(weights['conv1_w'])
     conv1_b = decode_weight(weights['conv1_b'])
@@ -216,11 +239,12 @@ def main():
     token_emb = TokenEmbeddingModel(num_tokens=10, latent_dim=checkpoint['latent_dim'])
     vae.load_state_dict(checkpoint['vae_state_dict'])
     token_emb.load_state_dict(checkpoint['embed_state_dict'])
+    vae.use_hard_mask = True
     vae.eval()
     token_emb.eval()
 
     for digit in range(0, 10):
-        lau_binary = lau_forward(digit, embed, W_fc, b_fc, conv1_w, conv1_b, conv2_w, conv2_b)
+        lau_binary = lau_forward(digit, embed, sparse_weights, sparse_masks, b_fc, conv1_w, conv1_b, conv2_w, conv2_b)
 
         with torch.no_grad():
             t = torch.tensor([digit], dtype=torch.long)
@@ -238,7 +262,7 @@ def main():
     print()
     print("Rendering Lau-emulated outputs for digits 0-9:")
     for digit in range(0, 10):
-        result = lau_forward(digit, embed, W_fc, b_fc, conv1_w, conv1_b, conv2_w, conv2_b)
+        result = lau_forward(digit, embed, sparse_weights, sparse_masks, b_fc, conv1_w, conv1_b, conv2_w, conv2_b)
 
         print(f"\n--- Digit {digit} ---")
         print_ascii(result)
