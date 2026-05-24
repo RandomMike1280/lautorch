@@ -86,7 +86,7 @@ def split_b64(b64_str, parts):
     part_size = (len(b64_str) + parts - 1) // parts
     if part_size % 4:
         part_size += 4 - (part_size % 4)
-    return [b64_str[i:i + part_size] for i in range(0, len(b64_str), part_size)]
+    return [b64_str[i * part_size:(i + 1) * part_size] or "AA==" for i in range(parts)]
 
 def write_weight_entry(f, name, meta, b64_override=None, part_names=None):
     f.write(f"modelWeights[\"{name}\"] = {{\n")

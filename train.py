@@ -19,9 +19,21 @@ def loss_function(recon_x, x, mu, logvar):
     
     return BCE + KLD, BCE, KLD
 
+def laplacian_loss(recon_x, x):
+    """Match local edge/curvature structure to discourage blurry shared shapes."""
+    kernel = torch.tensor(
+        [[0.0, 1.0, 0.0],
+         [1.0, -4.0, 1.0],
+         [0.0, 1.0, 0.0]],
+        device=recon_x.device,
+    ).view(1, 1, 3, 3)
+    recon_edges = F.conv2d(recon_x.view(-1, 1, 28, 28), kernel, padding=1)
+    target_edges = F.conv2d(x.view(-1, 1, 28, 28), kernel, padding=1)
+    return F.l1_loss(recon_edges, target_edges, reduction='sum')
+
 def train(epochs=10, batch_size=128, lr=1e-3, latent_dim=4,
-          sparsity_lambda=10.0, temp_start=1.0, temp_end=0.01,
-          lora_rank=3, lora_alpha=2.0):
+          sparsity_lambda=2.0, temp_start=1.0, temp_end=0.05,
+          lora_rank=3, lora_alpha=2.0, laplacian_lambda=0.5):
     # Set seed for reproducibility
     torch.manual_seed(42)
     
@@ -59,6 +71,7 @@ def train(epochs=10, batch_size=128, lr=1e-3, latent_dim=4,
     print(f"LoRA Decoder Parameters: {lora_params:,} (rank={lora_rank}, alpha={lora_alpha})")
     print(f"TokenEmbedding Parameters: {sum(p.numel() for p in token_embedding.parameters()):,}")
     print(f"Sparsity lambda: {sparsity_lambda}")
+    print(f"Laplacian lambda: {laplacian_lambda}")
     print("Starting joint training on CPU...")
     
     for epoch in range(1, epochs + 1):
@@ -72,6 +85,7 @@ def train(epochs=10, batch_size=128, lr=1e-3, latent_dim=4,
         train_embed_loss = 0.0
         train_align_loss = 0.0
         train_sparse_loss = 0.0
+        train_lap_loss = 0.0
         
         for batch_idx, (data, targets) in enumerate(train_loader):
             # Flatten image data
@@ -82,6 +96,7 @@ def train(epochs=10, batch_size=128, lr=1e-3, latent_dim=4,
             # 1. Forward pass VAE
             recon_batch, mu, logvar = vae(data_flat)
             vae_loss, bce, kld = loss_function(recon_batch, data_flat, mu, logvar)
+            vae_lap = laplacian_loss(recon_batch, data_flat)
             
             # 2. Token Embedding Loss for digits 0..9
             embed_mask = (targets >= 0) & (targets <= 9)
@@ -98,20 +113,23 @@ def train(epochs=10, batch_size=128, lr=1e-3, latent_dim=4,
                 
                 # Embedding reconstruction loss (against corresponding binarized hand-written digit)
                 embed_recon = F.binary_cross_entropy(recon_embed, active_data, reduction='sum')
+                embed_lap = laplacian_loss(recon_embed, active_data)
                 
                 # Alignment loss: Pull embedding close to the mean of VAE encoder's outputs
                 # We detach active_mu to align the embedding with VAE latent space without destabilizing VAE training
                 embed_align = F.mse_loss(z_embed, active_mu.detach(), reduction='sum')
                 
                 # Total embedding loss component
-                embed_loss = embed_recon + 10.0 * embed_align
+                embed_loss = embed_recon + 10.0 * embed_align + laplacian_lambda * embed_lap
             else:
                 embed_loss = torch.tensor(0.0)
                 embed_recon = torch.tensor(0.0)
                 embed_align = torch.tensor(0.0)
+                embed_lap = torch.tensor(0.0)
                 
             sparse_loss = sparsity_lambda * vae.fc_mask_sum()
-            total_loss = vae_loss + embed_loss + sparse_loss
+            lap_loss = laplacian_lambda * vae_lap
+            total_loss = vae_loss + embed_loss + sparse_loss + lap_loss
             total_loss.backward()
             
             optimizer.step()
@@ -123,6 +141,7 @@ def train(epochs=10, batch_size=128, lr=1e-3, latent_dim=4,
             train_embed_loss += embed_recon.item()
             train_align_loss += embed_align.item()
             train_sparse_loss += sparse_loss.item()
+            train_lap_loss += (lap_loss + laplacian_lambda * embed_lap).item()
             
         # Average epoch metrics
         num_samples = len(train_loader.dataset)
@@ -134,6 +153,7 @@ def train(epochs=10, batch_size=128, lr=1e-3, latent_dim=4,
               f"KLD: {train_vae_kld/num_samples:.2f} | "
               f"Embed Recon: {train_embed_loss/num_embed_samples:.2f} | "
               f"Embed Align: {train_align_loss/num_embed_samples:.4f} | "
+              f"Lap: {train_lap_loss/num_samples:.2f} | "
               f"Mask Sum: {vae.fc_mask_sum().item():.1f} | "
               f"Active: {vae.fc_active_count()}/1568 | "
               f"Sparse Loss: {train_sparse_loss/len(train_loader):.1f}")
@@ -148,6 +168,7 @@ def train(epochs=10, batch_size=128, lr=1e-3, latent_dim=4,
         'sparsity_lambda': sparsity_lambda,
         'lora_rank': lora_rank,
         'lora_alpha': lora_alpha,
+        'laplacian_lambda': laplacian_lambda,
     }
     torch.save(checkpoint, 'vae_and_embed.pth')
     print("Training finished successfully. Saved model weights to 'vae_and_embed.pth'.")
@@ -172,9 +193,10 @@ def train(epochs=10, batch_size=128, lr=1e-3, latent_dim=4,
         'lora_rank': lora_rank,
         'lora_alpha': lora_alpha,
         'lora_folded': True,
+        'laplacian_lambda': laplacian_lambda,
     }
     torch.save(decoder_checkpoint, 'decoder_and_embed.pth')
     print("Saved exported decoder weights to 'decoder_and_embed.pth'.")
 
 if __name__ == '__main__':
-    train(epochs=10, latent_dim=4)
+    train(epochs=30, latent_dim=4)

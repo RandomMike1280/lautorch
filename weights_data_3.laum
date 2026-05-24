@@ -2,14 +2,14 @@
 varol modelWeights = {}
 
 modelWeights["conv2_w"] = {
-    ["min"] = -0.55186802,
-    ["max"] = 0.58676451,
+    ["min"] = -0.68829358,
+    ["max"] = 0.83949459,
     ["rows"] = 1,
     ["cols"] = 4,
     ["dims"] = {1, 4, 3, 3},
-    ["b64"] = "f0NfSXhSSVBw18DSnJybuXy7bI/atc3/3uTjViA3BgAWNg90"
+    ["b64"] = "ajxHU0FcR2B4sLzMlpqcqJOBsOv/1fDy8+60YDREIQA3Kydh"
 }
 
-modelWeights["SW_part3"] = "W3I/Yjt+aU9ib7RtYmx6cG1kbG1siG5PVkthQHVgZW11c2ltlXSCT3ZsTlqCaG+NWmpsc22Ge2J1bGRjhn1qX3loiGNqZGiDf0tjeHd9hGl2kF5leXiINlpWZEJqSGVhiWV4YHVfcYBwgldGckxrZW1sjm9ybHRdYHNhUoF6XWptXm9sdXJ2jIxIcWaLX2CDcn9ckmltZ3GZkHFdgW9td36MbzlYZWp9"
+modelWeights["SW_part3"] = "paCEfnivipJqV6mThaGBjYGZo6Vy5p1xp7Gjl5F6gomKhWeltGybi6V0vmyxYGF90nqkfW6NsnpohsiIxEign5pdZciTm5NrlL5gY6R6mpSDl15deJG1ppeZm3t2oqmcm4ZycoB7hIaCfG7CqGSUr3dhhoykbLXIeXSvYZZwnmyV"
 
 return modelWeights

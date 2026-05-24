@@ -2,14 +2,14 @@
 varol modelWeights = {}
 
 modelWeights["conv1_w"] = {
-    ["min"] = -0.55477685,
-    ["max"] = 0.60899752,
+    ["min"] = -0.52133530,
+    ["max"] = 0.70444047,
     ["rows"] = 4,
     ["cols"] = 8,
     ["dims"] = {4, 8, 3, 3},
-    ["b64"] = "d4Z+kKGTi411jZeKioB2lJ+IUZRsXIibU5WPk6qqr4KWopyBpI9niJmVe3JnR3OBW3OqnYaljYmTbJ6Vc36ck3yXk4Sgro5qrYXndlt2kbCLro+0jmJjkmR1rINmXGB9kHeca3t8cHGYo56MZnqScomMiKOrnVqLYZyeanB6jbB2f2R+pHyJg3VocV96i5WnrJO5dGSLYlKjeHGRiIdsAG+OhIt4ea1QSo2ZHVCLgW5lh3Zqcnh6jFV6gQemZH6UiYqImnRYr2Y2f29jhH9ES5PRSENtRWirfJ0fxZaeq5tiInpmdsiptbR+IGiKUZWrG4Rp3NTM28ztwY+u/7GNto+CdHcpTKiShM26+s/HWpHreqHLVbi80bqnqrSSvORJ"
+    ["b64"] = "cplXeYlwj6hraoKWgnyDeb2MOHp4en2HeHSJfpqEkYlPe8ZFlGdki39xTi1DX4ZrnqV4fZ9iooaKeYplWV5bi52OwV6rbKaCz1vCbmtkwI+Jk4CodFtwf26mjXwzbYSMm3p8VH1IjZh9n5VhP3hebo15oGt90Vp4fmuNj3NeGXcpj5dzoXlogENyZ3pijGZ4mH/KdT5zh2S2lFOLdoN2ekeTtiMgP1FISVioY3VRShtwpnRVABEzZkVqOTOccXJ2eGNdepEwgyB0EFiJHFKg+nNtTCKYjizfO7xFw53Kef5lMnobVYBvl3wfT5/Ro73icb6iypKz97zU6qup/4pozZCNVV02B29fWm16h864q2uskn1jL1pBeem9jMig29NV"
 }
 
-modelWeights["SW_part2"] = "cY5jc4txq2Rzfm9xZGRwSm96WGONbW1gdFp9anh/cnN1WTRmfGJzbXZriFZaVEpId2l6fUpyiFZsUIeJaWVmhVlQWFVbgaZpZ1qBY1thUlR4bk98bTNaX5JKYXeXg41sV30+hk13n4xLhFddWHdfgFeIap9Fd3NKaHZ+WXxPVXtJWVNcZEE8ZG6NUpF7dGpreJJ9eF+Jb0qAWnBhXmWPamd0bXBze1xR"
+modelWeights["SW_part2"] = "eMN8sUy9r2SLbN2xCFN3fIyLllqfp5DBl2Z1npx8ipSLsYaCeZqvm3OMp5J+jo6QhY2Ek4J1prNZnZ9Zmq+2dnuSX3mkc3GBhZuohJaBgGh+D8vTasdzpbucbHeysl63ToCWs3CraqRsxkaBccR2lpCEcZG/e4usgImKXLeOkbqm"
 
 return modelWeights

@@ -2,26 +2,26 @@
 varol modelWeights = {}
 
 modelWeights["embed"] = {
-    ["min"] = -2.52335596,
-    ["max"] = 1.56667805,
+    ["min"] = -2.66697884,
+    ["max"] = 3.53720951,
     ["rows"] = 10,
     ["cols"] = 4,
     ["dims"] = {10, 4},
-    ["b64"] = "i5/FWf+gAMHUZnJcoWSCi6DaH2Wwm22J1KlQMH38PpzEm0uMldkbjw=="
+    ["b64"] = "ZTqUcKf/OrWiZWyXbWmIp26qAH1whGSToWcYm0vgP36AnVuTXcEPgw=="
 }
 
 modelWeights["conv1_b"] = {
-    ["min"] = -0.15402701,
-    ["max"] = 0.05377616,
+    ["min"] = -0.11487420,
+    ["max"] = 0.07424990,
     ["rows"] = 1,
     ["cols"] = 4,
     ["dims"] = {1, 4},
-    ["b64"] = "AP9wIA=="
+    ["b64"] = "AP+kcA=="
 }
 
 modelWeights["conv2_b"] = {
-    ["min"] = -0.04297856,
-    ["max"] = -0.04297856,
+    ["min"] = -0.36051434,
+    ["max"] = -0.36051434,
     ["rows"] = 1,
     ["cols"] = 1,
     ["dims"] = {1, 1},
@@ -29,19 +29,19 @@ modelWeights["conv2_b"] = {
 }
 
 modelWeights["SW"] = {
-    ["min"] = -1.88804388,
-    ["max"] = 2.67284870,
-    ["rows"] = 828,
+    ["min"] = -1.41159117,
+    ["max"] = 1.19473612,
+    ["rows"] = 634,
     ["cols"] = 1,
-    ["dims"] = {828},
+    ["dims"] = {634},
     ["parts"] = {"SW_part1", "SW_part2", "SW_part3", "SW_part4", "SW_part5"}
 }
 
-modelWeights["SW_part1"] = "MyxQRmuUblRbd0pSknZVemNyZmF3ZHV4hGyNbmWAXktnbXtKboNaaFNneHZ/V2tBWVWA/2tgamFqYHV8e3BgTHBpT1d5kmdxXW1jbX5abE9QTmRhcGuFYqJrQlOSU1mVM19LgoqYYmgAXCNXl6xPR31Dt1BxM2tXNVxiZ2NqYmFZZX1aWGRTSVNhZWVcaIFhZWNmf2ZgVoBngaaVdoRiUYhZZ3NofEpf"
+modelWeights["SW_part1"] = "i8ysxGwASoiBiJhyZISOcH9ng1mVl5uUiIeJcXiuc4luvJGKsrVCc7ShlIuzjJ+EeJpyuG92cY+Cl3VPcsh/qNNvjofXbcM5/WlgacCCgFKtXj2orJx/P5uZunwhbHiOpGpjuJdqgXp3wddeYmBhaY9xlqh0gLZiVZ9WfFKB05gy"
 
-modelWeights["SW_part4"] = "dVV/SXSAZVF3kU1ic1pzRVlThZiwQlVWZm1xW1RgX29iWIEqTlF4cHRoZWZboE6JX2F+fGpfaXVgW2CLdWOvO2ZZantxMpRdZZZajV9RpYBod4NebIBdfGhtcJNdX0NZfGdsXm9nbG9vcHViYmePe4hnfF9VdTB2gGFncmZmTI16T1cpoGd2ZnprhnV9amZoXWCZfGxnZXuFh3JXdoZYdX1lXVhxSWR3"
+modelWeights["SW_part4"] = "bnFxRU7BoHK4frNDkrecr4has8nYLoWaqFiHe3iysrVUfpRYhYZ5trEjppuVpV1sd5WmXbyTfIFpqYhjerlruLO2mnWSvbR2oV1ksZhyYKOAknGAkadXO5+ZlaV9e6uomrRJcKaMTmRph5ZlgYeVaYrBeJegVlaapJyLq5nZcoF9"
 
-modelWeights["SW_part5"] = "e7x9jjhqcW5wd2N3fUB0U1luW1+hblxLelhEa3Rye4t5cXtMYmprYWl4YFdecnJyIz1miFVUTmNZXXtcWTBykFp8XW1dU11SZyNUhHNpY2RXYGV9YXVzbGFoaGmFaHh0WW1yXWJhlmt0gGtTYYBoUXBsuUpsVVdhiV1/dmptfWaAdIFma0pYb2J6dGiAWoiATU93glSTTYVtWV1r"
+modelWeights["SW_part5"] = "dX2SqZCcn2NEqz6jjZOqeW97fWqkgIl6dZaiejmEdta3hHa8iXutcb6ubIf7mcq6jIX/xHp8QaZHdZqAYpSlpqOxXHiHjH2xl5+ArZqZlMmDsJqtrG2NiKWymbePWrCVopd+D6a5w59ws4GIjHRguIB5tqOWkw=="
 
 modelWeights["SM"] = {
     ["min"] = 0.00000000,
@@ -52,21 +52,21 @@ modelWeights["SM"] = {
     ["parts"] = {"SM_part1", "SM_part2"}
 }
 
-modelWeights["SM_part1"] = "CgQBBwEKBA4MCwsOBg8MCAsLDwwOAAUPDwQFBAoOBgYEBAsIDAUDDgQGCwsPCAYACA4MDgYABA8FBA4LDw4GDAAPDw0EDgQMDw8ADwAOCg4GAA8ABgYHDwcKBgQIAQIICgUBDgsEDgQKAAcPDAANBAQMDQ8PBAQKBwwCBwgABA4KDw8OBAEFDw8ABAgCCgoAAgwEBwENBwkMBwkHDw0ADw8OCA8ODwwFDw4PDwEODg0HDg8JDw8GAgUPDAkLBQ0MCAYMAQEJ"
+modelWeights["SM_part1"] = "BAwJDAAABAAAAA8PBQQACAUPDwoCAAkPAwAIAAAMBA8OAAAABgQPDgQAAAEPAAAAAAAEBwYFBAIFDAoHCgwFBAAHCg0GBAAMDwoABAAACwcLAAUABAYOCQAKAAAADwYMAAAABAMNDQ0CCAEPAQAPCAANDQwPAAAAAgwHAAoLAA8OBQ8KAAAGAAwLBQAAAAQODQEAAgAEDwsEBwEFDwoODwMEBA8OAA4FDAkPAAEMDQgCDw8LBA8AAw0JAA0GBQkHDwcKAAgB"
 
-modelWeights["SM_part2"] = "BA4KBAIIBAsFBg8ADA0ADwAEAAAIDwoPCwUOCgAKDwMEBgICDw4IAAsGBA8FBAADCggEDg8JCgEOBQgEBAwNDwYMCwoADwcGBQkCBA0MDQ8ADgoMDwYEBgQAAAkADgwHBAoEBA8MAgYNDgEBDwEFBw0PBw8EAQ0PAAkOAwwODg8HCw0AAwwPDA8EDAIKBw0ABA4FDwAABwMFCQ0PBAYNAQgABw4OBAkPBwUMAAwFDAYGDwIBAg8OAQYEAAIADQkDBA4="
+modelWeights["SM_part2"] = "CwEKAAEADQAMAAwABA8ABAAAAwAPCwAPAAAJCwQLDgcABg8PBwkCAAAECgYGBAAIBwsHBgQAAg8LBQMABAwECQ0ACwgCBQAHCQkABA8OAA8KBAIMDQ0ADgAAAAIMDwQCAAAGBQ8AAAYFCw8JDAAABQUOCw4AAAkLAAEOAAQGDwwCBgAAAg8PDgUAAAkPDgEKBAQAAQAADAABAQEDAAEAAAAAAw4MBQAMDwAPAQAADgAADwIAAgoPDwAAAAoODwsNAAA="
 
 modelWeights["b_fc"] = {
-    ["min"] = -1.06390178,
-    ["max"] = 1.21584880,
+    ["min"] = -1.64845526,
+    ["max"] = 1.92834318,
     ["rows"] = 1,
     ["cols"] = 392,
     ["dims"] = {1, 392},
     ["parts"] = {"b_fc_part1", "b_fc_part2"}
 }
 
-modelWeights["b_fc_part1"] = "d1GvbZ1XhGuki3aWfYaGroiyOWdxenlwSEitUV6dfY42Z4V1fQg/oHBirY8RlZJdaplSZ75dj3NQvWl/XnRCbl8wb3oygGSxYIZRmH+wmH6wP7l2aY9JjT/osY2FhTdOkpaAp3G55Z6Ju3G3Z09tX5OaOJV9bn+PjCtaknR3039vRHGJc2WARQ15Qpp+P4dAVa+MraK5bMnfwLsalk9JD2SAjkhvTGxNnUxaZTcjvqs6vJU6cLe1TyE2O22xopVoUDXA6Jyj"
+modelWeights["b_fc_part1"] = "clpgUpFRZm2Pc1qKZIZ5in18RVqAdkozVV5ZcXR2bYQXe42qhyl2LHtzgnUri4VadXWPbo1EfHx2e3J7bp+FZ1hca2V2bXKIY5decm91RlaAUn1eW3VBY1CMfm5+Z2AqdaDfvKu0jpaov4iRVFx4W7ZvXXd6cV3WjUw5ZXZ8yVBcQT6HdHpFZTwoOnX/fz1ZaZx1vnyChZ2kj40+hXYvZpKIeR5hWW9zflh0XEIbqY4sbn4zNZF9GBtJUYqRbJFzhUmcs4Z1"
 
-modelWeights["b_fc_part2"] = "mb5qeMmSbB5ddXDPbIxLnDBRql6qZmCHd7+gPnxJik6GV1ZycFKMneJI8/FOleTAldb/1eawcnqaYzstisaYiV9zgZuzNjUqa4StmoEubVZ1cJSIg1pae5hhUnt/ua53qbx7W8hqknCTfFY8Y57FpX93R45FobKPPzeOl3VOUpBiW6zMYx9KYT9z5aa9ppGCqK5yoENNbJtqXjRYOIl3ZDg6N1aPz6mOMk4APJeeVEddUjDHeVlwICRZroaHfHy65Ks="
+modelWeights["b_fc_part2"] = "nLFtdeN9elBOZ4m7mHNYYklVy3J0eWSJc7uSa3tgcy65o3FTN4Sou5p6mXRwi+Cpfoe7n8TpfUh7fltUUqaMVYN2TZGVW1VWmWJES242fmpMYXtjaFBnkXWXeHpOr4KDbohhZZVwj4Vxa1hgbmyCh02Pd2R0m385U0x3enRbRlNQnpCYlGpSUUxtsKmjt4eoq7NyenVVfpiPfkxPT1lzYUJPF1hte49bXloAW3V1RW5iKFKAik9kFU9Sjl2Wn5KPjrQ="
 
 return modelWeights
