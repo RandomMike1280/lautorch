@@ -2,9 +2,9 @@ import base64
 import torch
 
 OUTPUT_FILES = (
-    ("weights_data_1.laum", {"embed", "conv1_b", "conv2_b"}, {"SW": [0, 3, 4], "SM": [0, 1], "b_fc": [0, 1]}),
-    ("weights_data_2.laum", {"conv1_w"}, {"SW": [1]}),
-    ("weights_data_3.laum", {"conv2_w"}, {"SW": [2]}),
+    ("weights_data_1.laum", {"embed", "U1DB", "U1PB", "U2DB", "U2PB"}, {"SW": [0, 3, 4], "SM": [0, 1], "b_fc": [0, 1]}),
+    ("weights_data_2.laum", {"U1D", "U1P"}, {"SW": [1]}),
+    ("weights_data_3.laum", {"U2D", "U2P"}, {"SW": [2]}),
 )
 SPLIT_TENSORS = {"SW": 5, "SM": 2, "b_fc": 2}
 
@@ -61,10 +61,14 @@ def get_decoder_state(checkpoint):
             'dec_fc.weight': vae_state['dec_fc.weight'],
             'dec_fc.bias': vae_state['dec_fc.bias'],
             'dec_fc_mask_logits': vae_state['dec_fc_mask_logits'],
-            'dec_conv1.weight': vae_state['dec_conv1.weight'],
-            'dec_conv1.bias': vae_state['dec_conv1.bias'],
-            'dec_conv2.weight': vae_state['dec_conv2.weight'],
-            'dec_conv2.bias': vae_state['dec_conv2.bias'],
+            'dec_up1_dw.weight': vae_state['dec_up1_dw.weight'],
+            'dec_up1_dw.bias': vae_state['dec_up1_dw.bias'],
+            'dec_up1_pw.weight': vae_state['dec_up1_pw.weight'],
+            'dec_up1_pw.bias': vae_state['dec_up1_pw.bias'],
+            'dec_up2_dw.weight': vae_state['dec_up2_dw.weight'],
+            'dec_up2_dw.bias': vae_state['dec_up2_dw.bias'],
+            'dec_up2_pw.weight': vae_state['dec_up2_pw.weight'],
+            'dec_up2_pw.bias': vae_state['dec_up2_pw.bias'],
         }
         if 'dec_fc_lora_a' in vae_state and 'dec_fc_lora_b' in vae_state:
             decoder_state['dec_fc_lora_a'] = vae_state['dec_fc_lora_a']
@@ -141,10 +145,14 @@ def main():
     dec_fc_weight = effective_fc_weight(decoder_state, checkpoint)
     dec_fc_bias = decoder_state['dec_fc.bias']
     dec_fc_mask_logits = decoder_state.get('dec_fc_mask_logits', torch.ones_like(dec_fc_weight))
-    dec_conv1_weight = decoder_state['dec_conv1.weight']
-    dec_conv1_bias = decoder_state['dec_conv1.bias']
-    dec_conv2_weight = decoder_state['dec_conv2.weight']
-    dec_conv2_bias = decoder_state['dec_conv2.bias']
+    dec_up1_dw_weight = decoder_state['dec_up1_dw.weight']
+    dec_up1_dw_bias = decoder_state['dec_up1_dw.bias']
+    dec_up1_pw_weight = decoder_state['dec_up1_pw.weight']
+    dec_up1_pw_bias = decoder_state['dec_up1_pw.bias']
+    dec_up2_dw_weight = decoder_state['dec_up2_dw.weight']
+    dec_up2_dw_bias = decoder_state['dec_up2_dw.bias']
+    dec_up2_pw_weight = decoder_state['dec_up2_pw.weight']
+    dec_up2_pw_bias = decoder_state['dec_up2_pw.bias']
     
     # Transpose weights to match Lau matrix multiplication convention (x * W_transposed)
     # so we do not need to transpose at runtime in Lau.
@@ -169,10 +177,14 @@ def main():
         ("SW", sparse_weight_tensor),
         ("SM", encode_raw_bytes(sparse_masks, "SM", 1, len(sparse_masks))),
         ("b_fc", dec_fc_bias.unsqueeze(0)),
-        ("conv1_w", dec_conv1_weight),
-        ("conv1_b", dec_conv1_bias.unsqueeze(0)),
-        ("conv2_w", dec_conv2_weight),
-        ("conv2_b", dec_conv2_bias.unsqueeze(0)),
+        ("U1D", dec_up1_dw_weight),
+        ("U1DB", dec_up1_dw_bias.unsqueeze(0)),
+        ("U1P", dec_up1_pw_weight),
+        ("U1PB", dec_up1_pw_bias.unsqueeze(0)),
+        ("U2D", dec_up2_dw_weight),
+        ("U2DB", dec_up2_dw_bias.unsqueeze(0)),
+        ("U2P", dec_up2_pw_weight),
+        ("U2PB", dec_up2_pw_bias.unsqueeze(0)),
     ]
     
     tensor_map = dict(tensors)

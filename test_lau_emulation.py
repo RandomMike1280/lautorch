@@ -108,6 +108,54 @@ def conv2d_same(feature, weight, bias, in_channels, out_channels, height, width,
         result.append(out_channel)
     return result
 
+def depthwise_conv2d_same(feature, weight, bias, channels, height, width):
+    result = []
+    for ch in range(channels):
+        channel = []
+        for y in range(height):
+            row = []
+            for x in range(width):
+                value = bias[0][ch]
+                for ky in range(3):
+                    in_y = y + ky - 1
+                    if 0 <= in_y < height:
+                        for kx in range(3):
+                            in_x = x + kx - 1
+                            if 0 <= in_x < width:
+                                value += feature[ch][in_y][in_x] * weight[ch * 9 + ky * 3 + kx]
+                row.append(value)
+            channel.append(row)
+        result.append(channel)
+    return result
+
+def pointwise_conv2d(feature, weight, bias, in_channels, out_channels, height, width):
+    result = []
+    for out_ch in range(out_channels):
+        channel = []
+        for y in range(height):
+            row = []
+            for x in range(width):
+                value = bias[0][out_ch]
+                for in_ch in range(in_channels):
+                    value += feature[in_ch][y][x] * weight[out_ch * in_channels + in_ch]
+                row.append(value)
+            channel.append(row)
+        result.append(channel)
+    return result
+
+def pixel_shuffle_2x(feature, out_channels, height, width):
+    result = []
+    for out_ch in range(out_channels):
+        channel = []
+        for y in range(height * 2):
+            row = []
+            for x in range(width * 2):
+                sub = (y % 2) * 2 + (x % 2)
+                row.append(feature[out_ch * 4 + sub][y // 2][x // 2])
+            channel.append(row)
+        result.append(channel)
+    return result
+
 def sigmoid_approx_flatten(feature):
     result = [[]]
     for row in feature[0]:
@@ -202,16 +250,23 @@ def sparse_relu(z, sparse_weights, sparse_masks, bias):
         out[0].append(max(0, s))
     return out
 
-def lau_forward(digit, embed, sparse_weights, sparse_masks, b_fc, conv1_w, conv1_b, conv2_w, conv2_b):
+def lau_forward(digit, embed, sparse_weights, sparse_masks, b_fc,
+                up1_dw, up1_dw_b, up1_pw, up1_pw_b,
+                up2_dw, up2_dw_b, up2_pw, up2_pw_b):
     z_lau = [embed[digit]]
     h = sparse_relu(z_lau[0], sparse_weights, sparse_masks, b_fc)
 
     feature = reshape_feature(h[0], 8, 7, 7)
-    feature = upsample_nearest_2x(feature)
-    feature = conv2d_same(feature, conv1_w, conv1_b, 8, 4, 14, 14, 3)
     feature = relu_feature(feature)
-    feature = upsample_nearest_2x(feature)
-    feature = conv2d_same(feature, conv2_w, conv2_b, 4, 1, 28, 28, 3)
+    feature = depthwise_conv2d_same(feature, up1_dw, up1_dw_b, 8, 7, 7)
+    feature = relu_feature(feature)
+    feature = pointwise_conv2d(feature, up1_pw, up1_pw_b, 8, 16, 7, 7)
+    feature = pixel_shuffle_2x(feature, 4, 7, 7)
+    feature = relu_feature(feature)
+    feature = depthwise_conv2d_same(feature, up2_dw, up2_dw_b, 4, 14, 14)
+    feature = relu_feature(feature)
+    feature = pointwise_conv2d(feature, up2_pw, up2_pw_b, 4, 4, 14, 14)
+    feature = pixel_shuffle_2x(feature, 1, 14, 14)
     out = sigmoid_approx_flatten(feature)
     return binarize(out)[0]
 
@@ -229,10 +284,14 @@ def main():
     sparse_weights = decode_flat_weight(weights['SW'])
     sparse_masks = decode_flat_weight(weights['SM'])
     b_fc = decode_weight(weights['b_fc'])
-    conv1_w = decode_flat_weight(weights['conv1_w'])
-    conv1_b = decode_weight(weights['conv1_b'])
-    conv2_w = decode_flat_weight(weights['conv2_w'])
-    conv2_b = decode_weight(weights['conv2_b'])
+    up1_dw = decode_flat_weight(weights['U1D'])
+    up1_dw_b = decode_weight(weights['U1DB'])
+    up1_pw = decode_flat_weight(weights['U1P'])
+    up1_pw_b = decode_weight(weights['U1PB'])
+    up2_dw = decode_flat_weight(weights['U2D'])
+    up2_dw_b = decode_weight(weights['U2DB'])
+    up2_pw = decode_flat_weight(weights['U2P'])
+    up2_pw_b = decode_weight(weights['U2PB'])
 
     checkpoint = torch.load('vae_and_embed.pth', map_location='cpu')
     vae = TinyVAE(
@@ -248,7 +307,9 @@ def main():
     token_emb.eval()
 
     for digit in range(0, 10):
-        lau_binary = lau_forward(digit, embed, sparse_weights, sparse_masks, b_fc, conv1_w, conv1_b, conv2_w, conv2_b)
+        lau_binary = lau_forward(digit, embed, sparse_weights, sparse_masks, b_fc,
+                                 up1_dw, up1_dw_b, up1_pw, up1_pw_b,
+                                 up2_dw, up2_dw_b, up2_pw, up2_pw_b)
 
         with torch.no_grad():
             t = torch.tensor([digit], dtype=torch.long)
@@ -266,7 +327,9 @@ def main():
     print()
     print("Rendering Lau-emulated outputs for digits 0-9:")
     for digit in range(0, 10):
-        result = lau_forward(digit, embed, sparse_weights, sparse_masks, b_fc, conv1_w, conv1_b, conv2_w, conv2_b)
+        result = lau_forward(digit, embed, sparse_weights, sparse_masks, b_fc,
+                             up1_dw, up1_dw_b, up1_pw, up1_pw_b,
+                             up2_dw, up2_dw_b, up2_pw, up2_pw_b)
 
         print(f"\n--- Digit {digit} ---")
         print_ascii(result)

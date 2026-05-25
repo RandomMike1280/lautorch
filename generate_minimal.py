@@ -19,8 +19,8 @@ class TokenEmbeddingModel(nn.Module):
 class TinyDecoder(nn.Module):
     """
     Self-contained convolutional tiny decoder.
-    Takes an 8-dimensional latent vector and reconstructs a 28x28 binarized image.
-    Has fewer than 4,000 parameters at the default latent size.
+    Takes a latent vector and reconstructs a 28x28 binarized image using the
+    export decoder architecture.
     """
     def __init__(self, latent_dim=8):
         super(TinyDecoder, self).__init__()
@@ -28,8 +28,10 @@ class TinyDecoder(nn.Module):
         self.dec_fc_mask_logits = nn.Parameter(torch.empty(8 * 7 * 7, latent_dim))
         self.mask_temperature = 1.0
         self.use_hard_mask = True
-        self.dec_conv1 = nn.Conv2d(8, 4, kernel_size=3, padding=1)
-        self.dec_conv2 = nn.Conv2d(4, 1, kernel_size=3, padding=1)
+        self.dec_up1_dw = nn.Conv2d(8, 8, kernel_size=3, padding=1, groups=8)
+        self.dec_up1_pw = nn.Conv2d(8, 16, kernel_size=1)
+        self.dec_up2_dw = nn.Conv2d(4, 4, kernel_size=3, padding=1, groups=4)
+        self.dec_up2_pw = nn.Conv2d(4, 4, kernel_size=1)
 
     def fc_mask(self):
         if self.use_hard_mask:
@@ -39,10 +41,10 @@ class TinyDecoder(nn.Module):
     def forward(self, z):
         h = F.relu(F.linear(z, self.dec_fc.weight * self.fc_mask(), self.dec_fc.bias))
         h = h.view(-1, 8, 7, 7)
-        h = F.interpolate(h, scale_factor=2, mode='nearest')
-        h = F.relu(self.dec_conv1(h))
-        h = F.interpolate(h, scale_factor=2, mode='nearest')
-        return torch.sigmoid(self.dec_conv2(h)).view(-1, 784)
+        h = F.pixel_shuffle(self.dec_up1_pw(F.relu(self.dec_up1_dw(h))), 2)
+        h = F.relu(h)
+        h = F.pixel_shuffle(self.dec_up2_pw(F.relu(self.dec_up2_dw(h))), 2)
+        return torch.sigmoid(h).view(-1, 784)
 
 
 def print_ascii_digit(image):

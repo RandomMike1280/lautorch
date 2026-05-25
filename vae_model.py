@@ -20,7 +20,7 @@ class TinyVAE(nn.Module):
         self.fc_mu = nn.Linear(16 * 7 * 7, latent_dim)
         self.fc_logvar = nn.Linear(16 * 7 * 7, latent_dim)
 
-        # Decoder: latent -> 8x7x7 -> 4x14x14 -> 1x28x28
+        # Decoder: latent -> 8x7x7 -> pixel-shuffle blocks -> 1x28x28
         self.dec_fc = nn.Linear(latent_dim, 8 * 7 * 7)
         self.dec_fc_mask_logits = nn.Parameter(torch.full_like(self.dec_fc.weight, 2.0))
         if lora_rank > 0:
@@ -32,8 +32,10 @@ class TinyVAE(nn.Module):
             self.register_parameter("dec_fc_lora_b", None)
         self.mask_temperature = 1.0
         self.use_hard_mask = False
-        self.dec_conv1 = nn.Conv2d(8, 4, kernel_size=3, padding=1)
-        self.dec_conv2 = nn.Conv2d(4, 1, kernel_size=3, padding=1)
+        self.dec_up1_dw = nn.Conv2d(8, 8, kernel_size=3, padding=1, groups=8)
+        self.dec_up1_pw = nn.Conv2d(8, 16, kernel_size=1)
+        self.dec_up2_dw = nn.Conv2d(4, 4, kernel_size=3, padding=1, groups=4)
+        self.dec_up2_pw = nn.Conv2d(4, 4, kernel_size=1)
 
     def dec_fc_lora_delta(self):
         if self.lora_rank <= 0:
@@ -71,11 +73,11 @@ class TinyVAE(nn.Module):
         # z shape: (batch_size, latent_dim)
         h = F.relu(F.linear(z, self.effective_dec_fc_weight() * self.fc_mask(), self.dec_fc.bias))
         h = h.view(-1, 8, 7, 7)
-        h = F.interpolate(h, scale_factor=2, mode='nearest')
-        h = F.relu(self.dec_conv1(h))
-        h = F.interpolate(h, scale_factor=2, mode='nearest')
+        h = F.pixel_shuffle(self.dec_up1_pw(F.relu(self.dec_up1_dw(h))), 2)
+        h = F.relu(h)
+        h = F.pixel_shuffle(self.dec_up2_pw(F.relu(self.dec_up2_dw(h))), 2)
         # Use sigmoid output to represent Bernoulli probability distribution per pixel.
-        return torch.sigmoid(self.dec_conv2(h)).view(-1, 784)
+        return torch.sigmoid(h).view(-1, 784)
         
     def forward(self, x):
         mu, logvar = self.encode(x.view(-1, 784))

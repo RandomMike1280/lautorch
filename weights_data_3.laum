@@ -1,15 +1,24 @@
 -- Quantized weights data for Lau MNIST VAE
 varol modelWeights = {}
 
-modelWeights["conv2_w"] = {
-    ["min"] = -0.68829358,
-    ["max"] = 0.83949459,
-    ["rows"] = 1,
-    ["cols"] = 4,
-    ["dims"] = {1, 4, 3, 3},
-    ["b64"] = "ajxHU0FcR2B4sLzMlpqcqJOBsOv/1fDy8+60YDREIQA3Kydh"
+modelWeights["U2D"] = {
+    ["min"] = -1.41566598,
+    ["max"] = 1.17952955,
+    ["rows"] = 4,
+    ["cols"] = 1,
+    ["dims"] = {4, 1, 3, 3},
+    ["b64"] = "nMq6wP/Po6KDeYuWgQQAs+rUopuC4tidy7eAh+LZoNy3oaqE"
 }
 
-modelWeights["SW_part3"] = "paCEfnivipJqV6mThaGBjYGZo6Vy5p1xp7Gjl5F6gomKhWeltGybi6V0vmyxYGF90nqkfW6NsnpohsiIxEign5pdZciTm5NrlL5gY6R6mpSDl15deJG1ppeZm3t2oqmcm4ZycoB7hIaCfG7CqGSUr3dhhoykbLXIeXSvYZZwnmyV"
+modelWeights["U2P"] = {
+    ["min"] = -1.23723054,
+    ["max"] = 0.43146744,
+    ["rows"] = 4,
+    ["cols"] = 4,
+    ["dims"] = {4, 4, 1, 1},
+    ["b64"] = "HIEi/wY3sI6hagCRiSOPIg=="
+}
+
+modelWeights["SW_part3"] = "UW9ZOCiHjoCiabeejqOsbJRimp2sanlpmqF0kZF/Y5GHdZ6Uf4mAuW+OmLGEXJSZfHmheoCjmHudfIGscqihfZx9mJeQgX6YkI10Y2yAln6dhZiThod2lZt7n5yYlHV/fomWmGeOk4J3u2p5fYGEmLF5iTCZaWuUf3x/hH+GiYBji3Zok3aBC7aLaqCRdYSAbodgWIGPeJSSq2ecmG+Oi2KVlZrDVZxqraaFrn+Pn66rhHqel3uFgIB2YYN6oZE8jJiicriWmH6ipEiIh4JvjHh4k6iIcHGUeHuKcpR4gK+7YLKvsHNQt52LcJt6d3+VfoOLnu2Gmn2fgnl7nYCY"
 
 return modelWeights

@@ -2,46 +2,64 @@
 varol modelWeights = {}
 
 modelWeights["embed"] = {
-    ["min"] = -2.66697884,
-    ["max"] = 3.53720951,
+    ["min"] = -2.20221257,
+    ["max"] = 1.85264075,
     ["rows"] = 10,
     ["cols"] = 4,
     ["dims"] = {10, 4},
-    ["b64"] = "ZTqUcKf/OrWiZWyXbWmIp26qAH1whGSToWcYm0vgP36AnVuTXcEPgw=="
+    ["b64"] = "0LtRtpNS2Gm+kcPBe9i0yqRZQ8KB34nO/12hwDVmXcJ8bbt5fIIAqw=="
 }
 
-modelWeights["conv1_b"] = {
-    ["min"] = -0.11487420,
-    ["max"] = 0.07424990,
+modelWeights["U1DB"] = {
+    ["min"] = -0.15947729,
+    ["max"] = 0.49279615,
+    ["rows"] = 1,
+    ["cols"] = 8,
+    ["dims"] = {1, 8},
+    ["b64"] = "OB6xfjH/KQA="
+}
+
+modelWeights["U1PB"] = {
+    ["min"] = -0.46935961,
+    ["max"] = 0.08586078,
+    ["rows"] = 1,
+    ["cols"] = 16,
+    ["dims"] = {1, 16},
+    ["b64"] = "ONRurf8ABq+4NJRiLKnLvg=="
+}
+
+modelWeights["U2DB"] = {
+    ["min"] = -0.69828922,
+    ["max"] = -0.18822083,
     ["rows"] = 1,
     ["cols"] = 4,
     ["dims"] = {1, 4},
-    ["b64"] = "AP+kcA=="
+    ["b64"] = "AP9cNw=="
 }
 
-modelWeights["conv2_b"] = {
-    ["min"] = -0.36051434,
-    ["max"] = -0.36051434,
+modelWeights["U2PB"] = {
+    ["min"] = 0.83287793,
+    ["max"] = 0.97141778,
     ["rows"] = 1,
-    ["cols"] = 1,
-    ["dims"] = {1, 1},
-    ["b64"] = "AA=="
+    ["cols"] = 4,
+    ["dims"] = {1, 4},
+    ["b64"] = "AKyt/w=="
 }
 
 modelWeights["SW"] = {
-    ["min"] = -1.41159117,
-    ["max"] = 1.19473612,
-    ["rows"] = 634,
+    ["min"] = -3.62867236,
+    ["max"] = 3.11123753,
+    ["rows"] = 1274,
     ["cols"] = 1,
-    ["dims"] = {634},
+    ["dims"] = {1274},
     ["parts"] = {"SW_part1", "SW_part2", "SW_part3", "SW_part4", "SW_part5"}
 }
 
-modelWeights["SW_part1"] = "i8ysxGwASoiBiJhyZISOcH9ng1mVl5uUiIeJcXiuc4luvJGKsrVCc7ShlIuzjJ+EeJpyuG92cY+Cl3VPcsh/qNNvjofXbcM5/WlgacCCgFKtXj2orJx/P5uZunwhbHiOpGpjuJdqgXp3wddeYmBhaY9xlqh0gLZiVZ9WfFKB05gy"
+modelWeights["SW_part1"] = "xUxVsW+Go5t+eqFsmoiXcI9lgkertI6OH9d5bmCAiGBxeI6Ni3WHgW6HjoR8moR0crGfbV2jf0i/e4CJkIt2mZKGm3SVhpJVW6qemIydloGKdXmDUVx3pJ6nlXaFjXWIh2qxbp6Jg45qhI6dj2B5o4POgnptdZKEd2GZfICUeHyFinxxe4CChaGTh3l5cZ58YY6Df32Nhqd1q49yYp6EjGyVgpukh4SSAMuIVaeMhI1Op7iFjaC0fqKnpk5yepXHf3yFx4qXoHajkpiKhneShIifhJqbX4JVhHZxdnamg7aIho9yhX52gGuRkJeUfoV1e3Z7e49/OKd+j5mbiXWD"
 
-modelWeights["SW_part4"] = "bnFxRU7BoHK4frNDkrecr4has8nYLoWaqFiHe3iysrVUfpRYhYZ5trEjppuVpV1sd5WmXbyTfIFpqYhjerlruLO2mnWSvbR2oV1ksZhyYKOAknGAkadXO5+ZlaV9e6uomrRJcKaMTmRph5ZlgYeVaYrBeJegVlaapJyLq5nZcoF9"
+modelWeights["SW_part4"] = "kI6stoqNj6qgqYrCnI+AmXl8o8GNnKeKs3+AirpjlSvHfGyaco6WaJV7fX19QHN7fpdyjYODxXKJqF+AiXiwxoWYj3+Jl4t8ra1vdrStSHipuaeIkaKueIR+dZCoi5WDf72LsadujZiGpXScp4yDbnl5ZayZnZCRl7Ntn4VTnI+aZ1ucmIx0bn6Sp5Cay3p0aN9rrJFke4lwXIecj4Oar6qItZN9lX/SmHWuzXG5faefe6mXYMB2npaOgY14m52Coax/lH7JjIN512GZjZFQv2WLjHl4gn2Vf6GXc3OweVajsXqhgpiDjkWmg1ygfYaNk4eSiITCb7ahpbJrnVaq"
 
-modelWeights["SW_part5"] = "dX2SqZCcn2NEqz6jjZOqeW97fWqkgIl6dZaiejmEdta3hHa8iXutcb6ubIf7mcq6jIX/xHp8QaZHdZqAYpSlpqOxXHiHjH2xl5+ArZqZlMmDsJqtrG2NiKWymbePWrCVopd+D6a5w59ws4GIjHRguIB5tqOWkw=="
+modelWeights["SW_part5"] = "oH2OipSGfIWKl5BvYf9gkZWRkYmtepKbaXSfnnWOi4eViXyMkVx+lrBneYuVjXWNd2J6bJZxi4mVkoq7ipqUqHucaphzn3h/VI+FcI2Nn4OFgU3IR4mQk3aSjY6Cd39jmapufWibjI5/nx6VzJJlQXeRc4F0jk90inNbUl9zhnaRopiMommAilVoYH5+batRtrJ1eHNlnYXZk5eJd4iQjX14ipGFgo2Swp9vUrSddqJpcZmDl4RfsVJIi2KHiI9/jXeMmmGog3qTinKXbGqWeZ+iaZikXImVgHmOooB5jYx+Gq6BdnlooJlleoiMVHhrc3KUfpOWmJl+lJducYU="
 
 modelWeights["SM"] = {
     ["min"] = 0.00000000,
@@ -52,21 +70,21 @@ modelWeights["SM"] = {
     ["parts"] = {"SM_part1", "SM_part2"}
 }
 
-modelWeights["SM_part1"] = "BAwJDAAABAAAAA8PBQQACAUPDwoCAAkPAwAIAAAMBA8OAAAABgQPDgQAAAEPAAAAAAAEBwYFBAIFDAoHCgwFBAAHCg0GBAAMDwoABAAACwcLAAUABAYOCQAKAAAADwYMAAAABAMNDQ0CCAEPAQAPCAANDQwPAAAAAgwHAAoLAA8OBQ8KAAAGAAwLBQAAAAQODQEAAgAEDwsEBwEFDwoODwMEBA8OAA4FDAkPAAEMDQgCDw8LBA8AAw0JAA0GBQkHDwcKAAgB"
+modelWeights["SM_part1"] = "Bw8NDw8ODg8PCw8PDw8PDgoLDw8ODQ8PDwAPDw8PDw8PDw8ADw8JCw8PDw8PDA8PDw8MDw4ADwMPDw8PDw8PDw8PDw8ODwwODw8ADw8PCw8PDw8MDg8PDw8PDw4LCw8ADwQJDw8PDw0ODQ8PDwANDwsPDw8PCA8PDw8PDw0PDw8OCA8MDw8NDw4ADQsPDg8AAg0OCQQPDg8NDQgADw8PDAIMBg8PDwcPDwAPDwILDQ0LDwsMBw0LDgAFBQ8NAAAIDw8MAg4N"
 
-modelWeights["SM_part2"] = "CwEKAAEADQAMAAwABA8ABAAAAwAPCwAPAAAJCwQLDgcABg8PBwkCAAAECgYGBAAIBwsHBgQAAg8LBQMABAwECQ0ACwgCBQAHCQkABA8OAA8KBAIMDQ0ADgAAAAIMDwQCAAAGBQ8AAAYFCw8JDAAABQUOCw4AAAkLAAEOAAQGDwwCBgAAAg8PDgUAAAkPDgEKBAQAAQAADAABAQEDAAEAAAAAAw4MBQAMDwAPAQAADgAADwIAAgoPDwAAAAoODwsNAAA="
+modelWeights["SM_part2"] = "DwsPDQ0OAA0NCg8PDg0ACw8PDw8PDw8PDw8PDwIPDw8PDw8PDw8PCw8PDw8PDw8NDw0PDw8PAA8PDw8IDwsODw8FCw4LDw8PCQ0PCw8PDgsNDwoPDw8PDw8MDw8PDw8PDw8MDQ8ODw8NDw0MDw8PDw0PAQ4ODw8PAA8PDw8PDwsKCQ8PCw8PCA4PDw8LDwAPDwwPDw8NDwkPDw0NAAYPDwsADw8PDw4MDQkIDA8PDwoPCQ8NDgsPDQQPCQ8PDwAPDw4="
 
 modelWeights["b_fc"] = {
-    ["min"] = -1.64845526,
-    ["max"] = 1.92834318,
+    ["min"] = -1.31642389,
+    ["max"] = 1.59118855,
     ["rows"] = 1,
     ["cols"] = 392,
     ["dims"] = {1, 392},
     ["parts"] = {"b_fc_part1", "b_fc_part2"}
 }
 
-modelWeights["b_fc_part1"] = "clpgUpFRZm2Pc1qKZIZ5in18RVqAdkozVV5ZcXR2bYQXe42qhyl2LHtzgnUri4VadXWPbo1EfHx2e3J7bp+FZ1hca2V2bXKIY5decm91RlaAUn1eW3VBY1CMfm5+Z2AqdaDfvKu0jpaov4iRVFx4W7ZvXXd6cV3WjUw5ZXZ8yVBcQT6HdHpFZTwoOnX/fz1ZaZx1vnyChZ2kj40+hXYvZpKIeR5hWW9zflh0XEIbqY4sbn4zNZF9GBtJUYqRbJFzhUmcs4Z1"
+modelWeights["b_fc_part1"] = "yZTDp/+2/YqPjIeTid1wi2ZaS1ugvjE+XVVnhIBdqIcTaLFZbF1FVENvyIBlY4CCuJRoOwBPfjd3OVtUuZxsallRgnVsp1J0V3xaVZrLZmpxF51+jr96xWzApdmtITJZrnOUx7vMjOzfsHaRW1Z8v3uQN9CFdNGokSxdY2entGRaaatzgHuMZEdJPJPHncZFX46GTmnQfkhWX7JDntR0XjqKh5iZdZpDVV46hDdmkFpmgH9SmtGyZUpRXI28d2+CdCLDs5yU"
 
-modelWeights["b_fc_part2"] = "nLFtdeN9elBOZ4m7mHNYYklVy3J0eWSJc7uSa3tgcy65o3FTN4Sou5p6mXRwi+Cpfoe7n8TpfUh7fltUUqaMVYN2TZGVW1VWmWJES242fmpMYXtjaFBnkXWXeHpOr4KDbohhZZVwj4Vxa1hgbmyCh02Pd2R0m385U0x3enRbRlNQnpCYlGpSUUxtsKmjt4eoq7NyenVVfpiPfkxPT1lzYUJPF1hte49bXloAW3V1RW5iKFKAik9kFU9Sjl2Wn5KPjrQ="
+modelWeights["b_fc_part2"] = "mr2LqLJzYkpgaMPUX05LcE1p1YInRnaTg+bCiGdvlT2GjmVyemXs87hnULBursCXxquinmPRjLqYJIpJYLCEX4iGSkuQeVxNf3NUzoZDdWJ0QUSMX0KMiIVKnPTR0On/orN7U7q8c4DCm4hocIDBmVxvbGkkn69mTWh0TnekUz9oZImjymFhSElGotyxSmsTcmq+qotsdJGrs5CEQpluaB9EPJl8mphhdFVXKYmcfnpQUiLBX5CiUkVp1GRGcEmuoJw="
 
 return modelWeights
